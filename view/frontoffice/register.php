@@ -143,27 +143,27 @@ if (isset($_POST['register'])) {
         <form method="POST" action="register.php">
             <div class="form-group">
                 <label for="nom">Nom</label>
-                <input type="text" name="nom" id="nom" required>
+                <input type="text" name="nom" id="nom" >
             </div>
 
             <div class="form-group">
                 <label for="prenom">Prénom</label>
-                <input type="text" name="prenom" id="prenom" required>
+                <input type="text" name="prenom" id="prenom" >
             </div>
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" name="email" id="email" required>
+                <input type="email" name="email" id="email" >
             </div>
 
             <div class="form-group">
                 <label for="password">Mot de passe</label>
-                <input type="password" name="password" id="password" required>
+                <input type="password" name="password" id="password" >
             </div>
 
             <div class="form-group">
                 <label for="password_confirm">Confirmer le mot de passe</label>
-                <input type="password" name="password_confirm" id="password_confirm" required>
+                <input type="password" name="password_confirm" id="password_confirm" >
             </div>
 
             <button type="submit" name="register">S'inscrire</button>

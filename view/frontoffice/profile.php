@@ -47,8 +47,8 @@
                             <img src="https://img.icons8.com/bubbles/100/000000/user.png" class="img-radius" alt="User-Profile-Image">
                         </div>
                         
-                        <a href="login.php"><button class="btn btn-light btn-sm">Logout</button></a>
-                    </div>
+                        <button id="logout-btn" class="btn btn-light btn-sm">Logout</button>
+                        </div>
                 </div>
                 <div class="col-sm-8">
                     <div class="card-block py-4 px-4">
@@ -80,6 +80,11 @@
 
 <!-- JS -->
 <script>
+  document.getElementById('logout-btn').addEventListener('click', function () {
+    localStorage.removeItem('user'); // ou localStorage.clear();
+    window.location.href = 'login.php';
+});
+
 document.addEventListener("DOMContentLoaded", function () {
     const user = JSON.parse(localStorage.getItem('user'));
 

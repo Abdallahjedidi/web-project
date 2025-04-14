@@ -1,0 +1,160 @@
+/* Reset CSS pour des styles de base */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.main-content {
+    width: 90%;
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #343a40;
+}
+
+.search-container {
+    display: flex;
+    justify-content: left;
+    margin-bottom: 30px;
+}
+
+.search-container form {
+    display: flex;
+    gap: 10px;
+}
+
+.search-container input[type="text"] {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 70%;
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+}
+
+.search-container input[type="text"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+}
+
+.search-container input[type="submit"] {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #1f482b;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.search-container input[type="submit"]:hover {
+    background-color: #133d1b;
+    transform: scale(1.05);
+}
+
+/* Table style */
+.table-container {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table-container th, .table-container td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.table-container th {
+    background-color: #133d1b;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+
+.table-container th, .table-container td {
+    padding: 12px;
+    text-align: center;
+}
+
+.table-container tr:nth-child(even) {
+    background-color: #f3f3f3;
+}
+
+.table-container td {
+    vertical-align: middle;
+}
+
+.table-container .action-btn {
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.table-container .action-btn.edit {
+    background-color: #28a745; /* Vert pour Modifier */
+    color: white;
+}
+
+.table-container .action-btn.edit:hover {
+    background-color: #218838;
+}
+
+.table-container .action-btn.delete {
+    background-color: #dc3545; /* Rouge pour Supprimer */
+    color: white;
+}
+
+.table-container .action-btn.delete:hover {
+    background-color: #c82333;
+}
+
+.table-container .action-btn.reply {
+    background-color: #131bb1; /* Bleu pour Répondre */
+    color: white;
+}
+
+.table-container .action-btn.reply:hover {
+    background-color: #1a0a75;
+}
+/* Style de base pour le bouton */
+.stat {
+    display: inline-block; /* Pour donner un aspect de bouton */
+    padding: 10px 20px; /* Espacement interne */
+    text-decoration: none; /* Supprime le soulignement */
+    font-size: 16px; /* Taille du texte */
+    font-weight: bold; /* Met en gras le texte */
+    color: #fff; /* Couleur du texte */
+    background-color: #4CAF50; /* Couleur de fond */
+    border: none; /* Supprime la bordure */
+    border-radius: 5px; /* Coins arrondis */
+    text-align: center; /* Centre le texte */
+    transition: all 0.3s ease; /* Effet de transition */
+}
+
+/* Effet au survol */
+.stat:hover {
+    background-color: #45a049; /* Couleur légèrement différente */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Ombre au survol */
+    transform: translateY(-2px); /* Légère remontée */
+}
+
+/* Ajout d'effet au clic */
+.stat:active {
+    background-color: #3e8e41; /* Couleur encore plus foncée */
+    transform: translateY(1px); /* Effet d'appui */
+}

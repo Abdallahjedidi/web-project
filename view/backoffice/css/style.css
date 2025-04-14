@@ -1,0 +1,8 @@
+table { width: 88%; margin: 60px auto 0; border-collapse: collapse; }
+th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+th { background-color: #f2f2f2; }
+tr:hover { background-color: #f9f9f9; }
+.btn-delete { background-color: #e74c3c; color: white; border: none; border-radius: 4px; padding: 6px 12px; }
+.btn-edit { background-color: #3498db; color: white; border: none; border-radius: 4px; padding: 6px 12px; }
+.btn-delete:hover { background-color: #c0392b; }
+.btn-edit:hover { background-color: #2980b9; }

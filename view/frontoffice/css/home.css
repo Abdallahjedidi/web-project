@@ -1,0 +1,37 @@
+.hero-section {
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('images/city-bg.jpg');
+    background-size: cover;
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+}
+.feature-card {
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+    transition: all 0.3s;
+    height: 100%;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #1E90FF;
+}
+.btn-primary-custom {
+    background-color: #1E90FF;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+.btn-primary-custom:hover {
+    background-color: #187bcd;
+    transform: scale(1.05);
+}

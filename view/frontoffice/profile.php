@@ -8,32 +8,9 @@
     <!-- CSS Bootstrap & MaterialDesign -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.6.95/css/materialdesignicons.css">
+    <link href="css/profile.css" rel="stylesheet">
 
-    <style>
-        body {
-            background-color: #f4f4f4;
-        }
-        .user-card-full {
-            overflow: hidden;
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-        .bg-c-lite-green {
-            background: linear-gradient(135deg, #00c9ff, #92fe9d);
-        }
-        .img-radius {
-            border-radius: 50%;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-        }
-        button.btn {
-            border-radius: 25px;
-            padding: 10px 20px;
-            transition: 0.3s;
-        }
-        button.btn:hover {
-            transform: scale(1.05);
-        }
-    </style>
+   
 </head>
 <body>
 

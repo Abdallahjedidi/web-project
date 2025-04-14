@@ -1,3 +1,28 @@
+<?php
+include_once '../../controller/usercontroller.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $json = file_get_contents('php://input');
+    $data = json_decode($json, true);
+
+    if ($data && isset($data['id'], $data['nom'], $data['prenom'], $data['email'])) {
+        try {
+            $controller = new UserController();
+            $controller->updateUser($data);
+            echo json_encode(['success' => true]);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Données invalides.']);
+    }
+    exit;
+}
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -43,6 +68,8 @@
                                 <p class="m-b-10 f-w-600"><i class="mdi mdi-email"></i> Email</p>
                                 <h6 class="text-muted f-w-400" id="user-email">Email</h6>
                             </div>
+                            <button class="btn btn-warning btn-sm mt-3" data-toggle="modal" data-target="#editModal">Modifier</button>
+
                         </div>
                     </div>
                 </div>
@@ -117,5 +144,42 @@ document.addEventListener("DOMContentLoaded", function () {
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+
+<!-- zid zid -->
+ <!-- Modal de modification -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Modifier le profil</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form id="edit-form">
+              <div class="form-group">
+                  <label for="update-nom">Nom</label>
+                  <input type="text" class="form-control" id="update-nom" required>
+              </div>
+              <div class="form-group">
+                  <label for="update-prenom">Prénom</label>
+                  <input type="text" class="form-control" id="update-prenom" required>
+              </div>
+              <div class="form-group">
+                  <label for="update-email">Email</label>
+                  <input type="email" class="form-control" id="update-email" required>
+              </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" id="update-btn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

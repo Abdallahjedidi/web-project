@@ -1,3 +1,32 @@
+<?php
+include_once '../../controller/usercontroller.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $json = file_get_contents('php://input');
+    $data = json_decode($json, true);
+
+    if ($data && isset($data['id'], $data['nom'], $data['prenom'], $data['email'])) {
+        try {
+            $controller = new UserController();
+            $controller->updateUser($data);
+            echo json_encode(['success' => true]);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Données invalides.']);
+    }
+    exit;
+}
+?>
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,19 +48,20 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/profile.css" rel="stylesheet">
 
 </head>
 
 <body id="page-top">
 
-    <!-- Page Wrapper -->
     <div id="wrapper">
 
         <!-- Sidebar -->
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php">
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
@@ -43,7 +73,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="index.html">
+                <a class="nav-link" href="index.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
@@ -127,7 +157,7 @@
 
                         <!-- Nav Item - Alerts -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                           
+                        
                             <!-- Dropdown - Alerts -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="alertsDropdown">
@@ -173,7 +203,7 @@
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                          
+                           
                             <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="messagesDropdown">
@@ -238,9 +268,7 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">
-                                </span>
-                                                                <img class="img-profile rounded-circle"
+                                <img class="img-profile rounded-circle"
                                     src="img/undraw_profile.svg">
                             </a>
                             <!-- Dropdown - User Information -->
@@ -252,7 +280,7 @@
                                 </a>
                                
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="../frontoffice/login.php" data-toggle="modal" data-target="#logoutModal">
+                                <a class="dropdown-item" href="../frontoffice/profile.php" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Logout
                                 </a>
@@ -269,7 +297,6 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800" style="font-family: math;"  >Dashboard</h1>
                      
                     </div>
 
@@ -277,6 +304,167 @@
 
                 </div>
                 <!-- /.container-fluid -->
+                <h1 class="text-center mb-4">Profile</h1>
+
+                <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;     margin-top: -15%;
+">
+    <div class="col-xl-6 col-md-10">
+        <div class="card user-card-full" id="profile-info">
+            <div class="row m-0">
+                <div class="col-sm-4 bg-c-lite-green user-profile">
+                    <div class="card-block text-center text-white py-5">
+                        <div class="m-b-25">
+                            <img src="https://img.icons8.com/bubbles/100/000000/user.png" class="img-radius" alt="User-Profile-Image">
+                        </div>
+                        
+                        <button id="logout-btn" class="btn btn-light btn-sm">Logout</button>
+                        </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="card-block py-4 px-4">
+                        <h6 class="m-b-20 p-b-5 b-b-default f-w-600">Informations personnelles</h6>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <p class="m-b-10 f-w-600"><i class="mdi mdi-account-circle"></i> Nom</p>
+                                <h6 class="text-muted f-w-400" id="user-nom">Nom</h6>
+                            </div>
+                            <div class="col-sm-6">
+                                <p class="m-b-10 f-w-600"><i class="mdi mdi-account"></i> Prénom</p>
+                                <h6 class="text-muted f-w-400" id="user-prenom">Prenom</h6>
+                            </div>
+                            <div class="col-sm-12 mt-2">
+                                <p class="m-b-10 f-w-600"><i class="mdi mdi-email"></i> Email</p>
+                                <h6 class="text-muted f-w-400" id="user-email">Email</h6>
+                            </div>
+                            <button class="btn btn-warning btn-sm mt-3" data-toggle="modal" data-target="#editModal">Modifier</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+  </div>
+</div>
+
+<!-- JS -->
+<script>
+  document.getElementById('logout-btn').addEventListener('click', function () {
+    localStorage.removeItem('user'); // ou localStorage.clear();
+    window.location.href = 'login.php';
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    if (!user) {
+        document.getElementById('profile-info').innerHTML = "<div class='alert alert-warning'>Aucune information utilisateur trouvée. Veuillez vous connecter.</div>";
+        return;
+    }
+
+    document.getElementById('user-nom').textContent = user.nom;
+    document.getElementById('user-prenom').textContent = user.prenom;
+    document.getElementById('user-email').textContent = user.email;
+
+    document.getElementById('update-nom').value = user.nom;
+    document.getElementById('update-prenom').value = user.prenom;
+    document.getElementById('update-email').value = user.email;
+
+    document.getElementById('update-btn').addEventListener('click', function () {
+    const nom = document.getElementById('update-nom').value.trim();
+    const prenom = document.getElementById('update-prenom').value.trim();
+    const email = document.getElementById('update-email').value.trim();
+
+    const nameRegex = /^[a-zA-ZÀ-ÿ\s\-]+$/;
+
+    if (!nameRegex.test(nom)) {
+        alert("Le nom ne doit contenir que des lettres, des espaces ou des tirets.");
+        return;
+    }
+
+    if (!nameRegex.test(prenom)) {
+        alert("Le prénom ne doit contenir que des lettres, des espaces ou des tirets.");
+        return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert("Veuillez entrer une adresse email valide.");
+        return;
+    }
+
+    const updatedUser = {
+        id: user.id,
+        nom,
+        prenom,
+        email
+    };
+
+    fetch('profile.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedUser)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            document.getElementById('user-nom').textContent = updatedUser.nom;
+            document.getElementById('user-prenom').textContent = updatedUser.prenom;
+            document.getElementById('user-email').textContent = updatedUser.email;
+            $('#editModal').modal('hide');
+        } else {
+            alert("Erreur lors de la mise à jour : " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Erreur :", error);
+        alert("Une erreur est survenue.");
+    });
+});
+
+});
+</script>
+
+
+<!-- zid zid -->
+ <!-- Modal de modification -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Modifier le profil</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form id="edit-form">
+              <div class="form-group">
+                  <label for="update-nom">Nom</label>
+                  <input type="text" class="form-control" id="update-nom" >
+              </div>
+              <div class="form-group">
+                  <label for="update-prenom">Prénom</label>
+                  <input type="text" class="form-control" id="update-prenom" >
+              </div>
+              <div class="form-group">
+                  <label for="update-email">Email</label>
+                  <input type="email" class="form-control" id="update-email" >
+              </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" id="update-btn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
 
             </div>
             <!-- End of Main Content -->
@@ -304,31 +492,29 @@
 
     <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="/projet/view/frontoffice/login.php">Logout</a>
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="/projet/view/frontoffice/login.php">Logout</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script>
-   document.getElementById('logoutButton').addEventListener('click', function () {
-    localStorage.removeItem('user');  
 
-    window.location.href = '/projet/view/frontoffice/login.php';
-});
+<!-- JS Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
-</script>
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

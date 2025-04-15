@@ -1,30 +1,19 @@
 <?php
-include_once '../../controller/usercontroller.php';
-$controller = new UserController();
+session_start();
 
-if (isset($_GET['delete'])) {
-    $controller->deleteUser($_GET['delete']);
-    header("Location: Users.php");
-    exit;
+// Rediriger si l'utilisateur n'est pas connecté
+if (!isset($_SESSION['user'])) {
+    header("Location: ../frontoffice/login.php");
+    exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_user'])) {
-    $controller->updateUser([
-        'id' => $_POST['id'],
-        'nom' => $_POST['nom'],
-        'prenom' => $_POST['prenom'],
-        'email' => $_POST['email']
-    ]);
-    header("Location: Users.php");
-    exit;
+// Rediriger si l'utilisateur n'est pas admin
+$user = $_SESSION['user'];
+if ($user['role'] !== 'admin') {
+    header("Location: unauthorized.php"); // Crée une page unauthorized si tu veux
+    exit();
 }
-
-$users = $controller->getAllRegularUsers();
 ?>
-
-
-
-
 
 
 
@@ -49,11 +38,12 @@ $users = $controller->getAllRegularUsers();
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+
 </head>
 
 <body id="page-top">
 
+    <!-- Page Wrapper -->
     <div id="wrapper">
 
         <!-- Sidebar -->
@@ -89,6 +79,9 @@ $users = $controller->getAllRegularUsers();
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">edits:</h6>
                         <a class="collapse-item" href="Users.php">List Users</a>
+                        
+
+
                        
                     </div>
                 </div>
@@ -156,7 +149,7 @@ $users = $controller->getAllRegularUsers();
 
                         <!-- Nav Item - Alerts -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                        
+                           
                             <!-- Dropdown - Alerts -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="alertsDropdown">
@@ -202,7 +195,7 @@ $users = $controller->getAllRegularUsers();
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                           
+                          
                             <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="messagesDropdown">
@@ -267,7 +260,9 @@ $users = $controller->getAllRegularUsers();
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="img-profile rounded-circle"
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">
+                                </span>
+                                                                <img class="img-profile rounded-circle"
                                     src="img/undraw_profile.svg">
                             </a>
                             <!-- Dropdown - User Information -->
@@ -279,7 +274,7 @@ $users = $controller->getAllRegularUsers();
                                 </a>
                                
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="../frontoffice/profile.php" data-toggle="modal" data-target="#logoutModal">
+                                <a class="dropdown-item" href="../frontoffice/login.php" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Logout
                                 </a>
@@ -296,6 +291,7 @@ $users = $controller->getAllRegularUsers();
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800" style="font-family: math;"  >Dashboard</h1>
                      
                     </div>
 
@@ -303,78 +299,6 @@ $users = $controller->getAllRegularUsers();
 
                 </div>
                 <!-- /.container-fluid -->
-
-                <div class="container mt-5">
-    <h1 class="text-center mb-4">Liste des utilisateurs</h1>
-    <?php if (!empty($users)): ?>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Nom</th>
-                    <th>Prénom</th>
-                    <th>Email</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($users as $user): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($user['nom']) ?></td>
-                        <td><?= htmlspecialchars($user['prenom']) ?></td>
-                        <td><?= htmlspecialchars($user['email']) ?></td>
-                        <td>
-                            <!-- Supprimer -->
-                            <form method="GET" style="display:inline-block;" onsubmit="return confirm('Supprimer cet utilisateur ?');">
-                                <input type="hidden" name="delete" value="<?= $user['id'] ?>">
-                                <button type="submit" class="btn-delete">Supprimer</button>
-                            </form>
-
-                            <!-- Modifier -->
-                            <button type="button" class="btn-edit" data-toggle="modal" data-target="#editModal<?= $user['id'] ?>">Modifier</button>
-
-                            <!-- Modal -->
-                            <div class="modal fade" id="editModal<?= $user['id'] ?>" tabindex="-1" role="dialog" aria-labelledby="editModalLabel<?= $user['id'] ?>" aria-hidden="true">
-                              <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                  <form method="POST">
-                                      <div class="modal-header">
-                                        <h5 class="modal-title" id="editModalLabel<?= $user['id'] ?>">Modifier Utilisateur</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                          <span aria-hidden="true">&times;</span>
-                                        </button>
-                                      </div>
-                                      <div class="modal-body">
-                                          <input type="hidden" name="id" value="<?= $user['id'] ?>">
-                                          <div class="form-group">
-                                              <label>Nom</label>
-                                              <input type="text" class="form-control" name="nom" value="<?= htmlspecialchars($user['nom']) ?>" >
-                                          </div>
-                                          <div class="form-group">
-                                              <label>Prénom</label>
-                                              <input type="text" class="form-control" name="prenom" value="<?= htmlspecialchars($user['prenom']) ?>">
-                                          </div>
-                                          <div class="form-group">
-                                              <label>Email</label>
-                                              <input type="email" class="form-control" name="email" value="<?= htmlspecialchars($user['email']) ?>" >
-                                          </div>
-                                      </div>
-                                      <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                        <button type="submit" name="edit_user" class="btn btn-primary">Enregistrer</button>
-                                      </div>
-                                  </form>
-                                </div>
-                              </div>
-                            </div>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php else: ?>
-        <p class="text-center">Aucun utilisateur trouvé avec le rôle "user".</p>
-    <?php endif; ?>
-</div>
 
             </div>
             <!-- End of Main Content -->
@@ -402,24 +326,31 @@ $users = $controller->getAllRegularUsers();
 
     <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="/projet/view/frontoffice/login.php">Logout</a>
-                </div>
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="/projet/view/frontoffice/login.php">Logout</a>
             </div>
         </div>
     </div>
+</div>
+<script>
+   document.getElementById('logoutButton').addEventListener('click', function () {
+    localStorage.removeItem('user');  
 
+    window.location.href = '/projet/view/frontoffice/login.php';
+});
+
+</script>
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

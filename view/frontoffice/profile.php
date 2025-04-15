@@ -106,44 +106,61 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('update-email').value = user.email;
 
     document.getElementById('update-btn').addEventListener('click', function () {
-        const updatedUser = {
-            id: user.id,
-            nom: document.getElementById('update-nom').value,
-            prenom: document.getElementById('update-prenom').value,
-            email: document.getElementById('update-email').value
-        };
+    const nom = document.getElementById('update-nom').value.trim();
+    const prenom = document.getElementById('update-prenom').value.trim();
+    const email = document.getElementById('update-email').value.trim();
 
-        fetch('profile.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(updatedUser)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                localStorage.setItem('user', JSON.stringify(updatedUser));
-                document.getElementById('user-nom').textContent = updatedUser.nom;
-                document.getElementById('user-prenom').textContent = updatedUser.prenom;
-                document.getElementById('user-email').textContent = updatedUser.email;
-                $('#editModal').modal('hide');
-            } else {
-                alert("Erreur lors de la mise à jour : " + data.message);
-            }
-        })
-        .catch(error => {
-            console.error("Erreur :", error);
-            alert("Une erreur est survenue.");
-        });
+    const nameRegex = /^[a-zA-ZÀ-ÿ\s\-]+$/;
+
+    if (!nameRegex.test(nom)) {
+        alert("Le nom ne doit contenir que des lettres, des espaces ou des tirets.");
+        return;
+    }
+
+    if (!nameRegex.test(prenom)) {
+        alert("Le prénom ne doit contenir que des lettres, des espaces ou des tirets.");
+        return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert("Veuillez entrer une adresse email valide.");
+        return;
+    }
+
+    const updatedUser = {
+        id: user.id,
+        nom,
+        prenom,
+        email
+    };
+
+    fetch('profile.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedUser)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            localStorage.setItem('user', JSON.stringify(updatedUser));
+            document.getElementById('user-nom').textContent = updatedUser.nom;
+            document.getElementById('user-prenom').textContent = updatedUser.prenom;
+            document.getElementById('user-email').textContent = updatedUser.email;
+            $('#editModal').modal('hide');
+        } else {
+            alert("Erreur lors de la mise à jour : " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Erreur :", error);
+        alert("Une erreur est survenue.");
     });
 });
-</script>
 
-<!-- JS Bootstrap -->
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+});
+</script>
 
 
 <!-- zid zid -->
@@ -161,15 +178,15 @@ document.addEventListener("DOMContentLoaded", function () {
           <form id="edit-form">
               <div class="form-group">
                   <label for="update-nom">Nom</label>
-                  <input type="text" class="form-control" id="update-nom" required>
+                  <input type="text" class="form-control" id="update-nom" >
               </div>
               <div class="form-group">
                   <label for="update-prenom">Prénom</label>
-                  <input type="text" class="form-control" id="update-prenom" required>
+                  <input type="text" class="form-control" id="update-prenom" >
               </div>
               <div class="form-group">
                   <label for="update-email">Email</label>
-                  <input type="email" class="form-control" id="update-email" required>
+                  <input type="email" class="form-control" id="update-email">
               </div>
           </form>
       </div>

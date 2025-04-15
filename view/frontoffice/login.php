@@ -3,6 +3,13 @@ session_start();
 include_once '../../config.php';
 include_once '../../model/User.php';
 include_once '../../controller/usercontroller.php';
+  
+
+
+
+
+
+
 
 $error_message = '';
 $success_message = '';
@@ -16,8 +23,11 @@ if (isset($_POST['login'])) {
 
     if (empty($email) || empty($password)) {
         $error_message = "Veuillez remplir tous les champs de connexion.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error_message = "Veuillez entrer une adresse email valide.";
+    } elseif (strlen($password) < 8) {
+        $error_message = "Le mot de passe doit contenir au moins 8 caractères.";
     } else {
-        // Assure-toi que $UserController existe bien, par exemple :
         $UserController = new UserController();
         
         $user = $UserController->getOneUserByEmail($email);
@@ -27,7 +37,6 @@ if (isset($_POST['login'])) {
             $_SESSION['user_role'] = $user['role'];
             $_SESSION['user_nom'] = $user['nom'];
 
-            // Récupération de toutes les informations de l'utilisateur pour localStorage
             $userData = [
                 'id'       => $user['id'],
                 'nom'      => $user['nom'],
@@ -35,13 +44,12 @@ if (isset($_POST['login'])) {
                 'email'    => $user['email'],
                 'role'     => $user['role']
             ];
-            // Conversion en JSON pour le JavaScript
             $userJson = json_encode($userData);
             
             if ($user['role'] === 'admin') {
                 echo "<script>
                         localStorage.setItem('user', '$userJson');
-                        window.location.href = '../../view/backoffice/index.html';
+                        window.location.href = '../../view/backoffice/index.php';
                       </script>";
             } else {
                 echo "<script>

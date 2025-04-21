@@ -1,25 +1,56 @@
 <script>
 function validateAddVehiculeForm() {
-  const fields = [
-    { id: "id_vehicule", name: "ID Véhicule" },
-    { id: "type", name: "Type" },
-    { id: "compagnie", name: "Compagnie" },
-    { id: "accessibilte", name: "Accessibilité" },
-    { id: "etat", name: "État" },
-    { id: "niveau_confort", name: "Niveau de confort" }
-  ];
+  const form = document.getElementById("vehiculeForm") || document.forms["vehiculeForm"];
 
-  for (let field of fields) {
-    const value = document.getElementById(field.id).value.trim();
-    if (value === "") {
-      alert("Veuillez remplir le champ : " + field.name);
-      return false;
-    }
+  const matricule = document.getElementById("matricule").value.trim();
+  const type = document.getElementById("type").value.trim();
+  const compagnie = document.getElementById("compagnie").value.trim();
+  const accessibilte = document.getElementById("accessibilte").value.trim().toLowerCase();
+  const etat = document.getElementById("etat").value.trim().toLowerCase();
+  const niveauConfort = document.getElementById("niveau_confort").value.trim();
+
+  if (!matricule || !type || !compagnie || !accessibilte || !etat || !niveauConfort) {
+    alert("Veuillez remplir tous les champs obligatoires.");
+    return false;
+  }
+
+  if (isNaN(matricule) || parseInt(matricule) <= 0) {
+    alert("L'ID Véhicule doit être un nombre positif.");
+    document.getElementById("matricule").focus();
+    return false;
+  }
+
+  if (type.length < 2) {
+    alert("Le champ Type doit contenir au moins 2 caractères.");
+    document.getElementById("type").focus();
+    return false;
+  }
+
+  if (compagnie.length < 2) {
+    alert("Le champ Compagnie doit contenir au moins 2 caractères.");
+    document.getElementById("compagnie").focus();
+    return false;
+  }
+
+
+  const etatOptions = ["en service", "hors service", "en panne"];
+  if (!etatOptions.includes(etat)) {
+    alert("Le champ État n'est pas valide.");
+    document.getElementById("etat").focus();
+    return false;
+  }
+
+  const niveau = parseInt(niveauConfort);
+  if (isNaN(niveau) || niveau < 1 || niveau > 5) {
+    alert("Le niveau de confort doit être un nombre entre 1 et 5.");
+    document.getElementById("niveau_confort").focus();
+    return false;
   }
 
   return true;
 }
 </script>
+
 
 <?php
 include_once '../../Controller/vehiculectrl.php';
@@ -28,7 +59,7 @@ include_once '../../config.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $vehicule = new Vehicule();
     
-    $vehicule->setIdVehicule($_POST['id_vehicule']);
+    $vehicule->setmatricule($_POST['matricule']);
     $vehicule->setType($_POST['type']);
     $vehicule->setCompagnie($_POST['compagnie']);
     $vehicule->setAccessibilte($_POST['accessibilte']);
@@ -104,7 +135,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h6 class="collapse-header">edits:</h6>
             <a class="collapse-item" href="addvehicule.php">add vehicules</a>
             <a class="collapse-item" href="affichevehicule.php">display vehicules</a>
-            <a class="collapse-item" href="modifiervehicule.php">modify vehicules</a>
         </div>
     </div>
 </li>
@@ -358,27 +388,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <form class="user mx-auto" action="addVehicule.php" method="POST" style="max-width: 400px;" onsubmit="return validateAddVehiculeForm();">
                     <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="id_vehicule"
-                                name="id_vehicule" placeholder="ID Véhicule" >
+                            <input  class="form-control form-control-user" id="matricule"
+                                name="matricule" placeholder="matricule" >
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="type"
+                            <input  class="form-control form-control-user" id="type"
                                 name="type" placeholder="Type" >
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="compagnie"
+                            <input  class="form-control form-control-user" id="compagnie"
                                 name="compagnie" placeholder="Compagnie" >
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="accessibilte"
+                            <input  class="form-control form-control-user" id="accessibilte"
                                 name="accessibilte" placeholder="Accessibilité" >
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="etat"
+                            <input  class="form-control form-control-user" id="etat"
                                 name="etat" placeholder="État" >
                         </div>
                         <div class="form-group">
-                            <input type="number" class="form-control form-control-user" id="niveau_confort"
+                            <input  class="form-control form-control-user" id="niveau_confort"
                                 name="niveau_confort" placeholder="Niveau de confort" >
                         </div>
                         <button type="submit" class="btn btn-primary btn-user btn-block">

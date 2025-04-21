@@ -10,12 +10,12 @@ class Vehiculec{
     
     try {
         $query = $db->prepare(
-            "INSERT INTO vehicule (id_vehicule, type, compagnie, accessibilte, etat, niveau_confort) 
-             VALUES (:id_vehicule, :type, :compagnie, :accessibilte, :etat, :niveau_confort)"
+            "INSERT INTO vehicule (matricule, type, compagnie, accessibilte, etat, niveau_confort) 
+             VALUES (:matricule, :type, :compagnie, :accessibilte, :etat, :niveau_confort)"
         );
         
         $query->execute([
-            ':id_vehicule' => $vehicule->getIdVehicule(),
+            ':matricule' => $vehicule->getmatricule(),
             ':type' => $vehicule->getType(),
             ':compagnie' => $vehicule->getCompagnie(),
             ':accessibilte' => $vehicule->getAccessibilte(),
@@ -68,14 +68,14 @@ class Vehiculec{
 
     }
 }
-public function deleteVehicule($id_vehicule)
+public function deleteVehicule($matricule)
 {
     $db = config::getConnection();
 
     try {
-        $query = $db->prepare("DELETE FROM vehicule WHERE id_vehicule = :id_vehicule");
+        $query = $db->prepare("DELETE FROM vehicule WHERE matricule = :matricule");
         $query->execute([
-            ':id_vehicule' => $id_vehicule
+            ':matricule' => $matricule
         ]);
 
         echo '
@@ -146,10 +146,10 @@ public function updateVehicule($data)
                 accessibilte = :accessibilte,
                 etat = :etat,
                 niveau_confort = :niveau_confort
-            WHERE id_vehicule = :id_vehicule
+            WHERE matricule = :matricule
         ");
         $query->execute([
-            ':id_vehicule' => $data->getIdVehicule(),
+            ':matricule' => $data->getmatricule(),
             ':type' => $data->getType(),
             ':compagnie' => $data->getCompagnie(),
             ':accessibilte' => $data->getAccessibilte(),
@@ -202,7 +202,7 @@ public function updateVehicule($data)
 public function rechercher($id)
 {
     $db = config::getConnection();
-    $sql = "SELECT * FROM vehicule WHERE id_vehicule = :id";
+    $sql = "SELECT * FROM vehicule WHERE matricule = :id";
     try {
         $query = $db->prepare($sql);
         $query->execute(['id' => $id]);

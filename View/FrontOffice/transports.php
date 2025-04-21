@@ -1,22 +1,42 @@
-  <script>
-  function validateForm() {
-    // Retrieve form field values
-    var idRapport = document.forms["rapportForm"]["id_rapport"].value.trim();
-    var idVehiculeLie = document.forms["rapportForm"]["id_vehicule_lie"].value.trim();
-    var utilisateurNom = document.forms["rapportForm"]["utilisateur_nom"].value.trim();
-    var dateSignalement = document.forms["rapportForm"]["date_signalement"].value.trim();
-    var typeProbleme = document.forms["rapportForm"]["type_probleme"].value.trim();
-    var description = document.forms["rapportForm"]["description"].value.trim();
+<script>
+function validateForm() {
+  var matricule_lie = document.forms["rapportForm"]["matricule_lie"].value.trim();
+  var utilisateurNom = document.forms["rapportForm"]["utilisateur_nom"].value.trim();
+  var dateSignalement = document.forms["rapportForm"]["date_signalement"].value.trim();
+  var typeProbleme = document.forms["rapportForm"]["type_probleme"].value.trim();
+  var description = document.forms["rapportForm"]["description"].value.trim();
 
-    // Check if any field is empty
-    if (idRapport === "" || idVehiculeLie === "" || utilisateurNom === "" || dateSignalement === "" || typeProbleme === "" || description === "" ) {
-      alert("Veuillez remplir tous les champs obligatoires.");
-      return false; // Prevent form submission
-    }
-
-    return true; // Allow form submission
+  if (!matricule_lie || !utilisateurNom || !dateSignalement || !typeProbleme || !description) {
+    alert("Veuillez remplir tous les champs obligatoires.");
+    return false;
   }
-  </script>
+
+
+  if (isNaN(matricule_lie) || parseInt(matricule_lie) <= 0) {
+    alert("L'identifiant du véhicule lié doit être un nombre positif.");
+    return false;
+  }
+
+  var nameRegex = /^[a-zA-Z\s\-]+$/;
+  if (!nameRegex.test(utilisateurNom)) {
+    alert("Le nom de l'utilisateur ne doit contenir que des lettres, des espaces ou des tirets.");
+    return false;
+  }
+
+  var dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateRegex.test(dateSignalement)) {
+    alert("La date de signalement doit être au format AAAA-MM-JJ.");
+    return false;
+  }
+
+  if (description.length < 10) {
+    alert("La description doit contenir au moins 10 caractères.");
+    return false;
+  }
+
+  return true; 
+</script>
+
 
 <?php
 include_once '../../Controller/vehiculectrl.php';
@@ -31,8 +51,7 @@ include_once '../../Controller/rapportctrl.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $rapport = new Rapport();
 
-    $rapport->setIdRapport($_POST['id_rapport']);
-    $rapport->setIdVehiculeLie($_POST['id_vehicule_lie']);
+    $rapport->setmatriculeLie($_POST['matricule_lie']);
     $rapport->setUtilisateurNom($_POST['utilisateur_nom']);
     $rapport->setDateSignalement($_POST['date_signalement']);
     $rapport->setTypeProbleme($_POST['type_probleme']);
@@ -165,7 +184,7 @@ $acceptedRapports = array_filter($rapports, function($rapport) {
             <div class="col-md-4 mb-4">
               <div class="hoverbrasomek">
                     <div class="card-body">
-                        <h5 class="card-title">Véhicule ID: <?= htmlspecialchars($vehicule['id_vehicule']) ?></h5>
+                        <h5 class="card-title">Matricule: <?= htmlspecialchars($vehicule['matricule']) ?></h5>
                         <p class="card-text"><strong>Type:</strong> <?= htmlspecialchars($vehicule['type']) ?></p>
                         <p class="card-text"><strong>Compagnie:</strong> <?= htmlspecialchars($vehicule['compagnie']) ?></p>
                         <p class="card-text"><strong>Accessibilité:</strong> <?= htmlspecialchars($vehicule['accessibilte']) ?></p>
@@ -190,10 +209,8 @@ $acceptedRapports = array_filter($rapports, function($rapport) {
         <div class="form_container">
         <form name="rapportForm" action="transports.php" method="POST" enctype="multipart/form-data" onsubmit="return validateForm();">
         <div>
-              <input type="number" name="id_rapport" placeholder="ID Rapport"  />
-            </div>
             <div>
-              <input type="text" name="id_vehicule_lie" placeholder="Matricule du Véhicule"  />
+              <input type="text" name="matricule_lie" placeholder="Matricule du Véhicule"  />
             </div>
             <div>
               <input type="text" name="utilisateur_nom" placeholder="Nom de l'utilisateur"  />
@@ -232,8 +249,7 @@ $acceptedRapports = array_filter($rapports, function($rapport) {
         echo '<div class="col-md-4 mb-4">
                 <div class="card hoverbrasomek">
                     <div class="card-body">
-                        <h5 class="card-title">ID: ' . htmlspecialchars($rapport['id_rapport']) . '</h5>
-                        <p class="card-text"><strong>Matricule du Véhicule:</strong> ' . htmlspecialchars($rapport['id_vehicule_lie']) . '</p>
+                        <p class="card-text"><strong>Matricule du Véhicule:</strong> ' . htmlspecialchars($rapport['matricule_lie']) . '</p>
                         <p class="card-text"><strong>Nom de l\'Utilisateur:</strong> ' . htmlspecialchars($rapport['utilisateur_nom']) . '</p>
                         <p class="card-text"><strong>Date de Signalement:</strong> ' . htmlspecialchars($rapport['date_signalement']) . '</p>
                         <p class="card-text"><strong>Type de Problème:</strong> ' . htmlspecialchars($rapport['type_probleme']) . '</p>

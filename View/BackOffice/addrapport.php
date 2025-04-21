@@ -1,27 +1,61 @@
 <script>
 function validateVehiculeForm() {
   const form = document.forms["vehiculeForm"];
-  const fields = [
-    { id: "id_vehicule", name: "ID Véhicule" },
-    { id: "type", name: "Type" },
-    { id: "compagnie", name: "Compagnie" },
-    { id: "accessibilte", name: "Accessibilité" },
-    { id: "etat", name: "État" },
-    { id: "niveau_confort", name: "Niveau de confort" }
-  ];
+  const idVehicule = form["id_vehicule"].value.trim();
+  const type = form["type"].value.trim();
+  const compagnie = form["compagnie"].value.trim();
+  const accessibilite = form["accessibilte"].value.trim();
+  const etat = form["etat"].value.trim();
+  const niveauConfort = form["niveau_confort"].value.trim();
 
-  for (let field of fields) {
-    const input = form[field.id];
-    if (!input.checkValidity()) {
-      alert("Veuillez remplir le champ : " + field.name);
-      input.focus();
-      return false;
-    }
+  if (!idVehicule || !type || !compagnie || !accessibilite || !etat || !niveauConfort) {
+    alert("Veuillez remplir tous les champs obligatoires.");
+    return false;
   }
 
-  return true;
+  if (isNaN(idVehicule) || parseInt(idVehicule) <= 0) {
+    alert("L'ID du véhicule doit être un nombre positif.");
+    form["matricule"].focus();
+    return false;
+  }
+
+  if (type.length < 2) {
+    alert("Le champ Type doit contenir au moins 2 caractères.");
+    form["type"].focus();
+    return false;
+  }
+
+  if (compagnie.length < 2) {
+    alert("Le champ Compagnie doit contenir au moins 2 caractères.");
+    form["compagnie"].focus();
+    return false;
+  }
+
+  const accesValides = ["oui", "non"];
+  if (!accesValides.includes(accessibilite.toLowerCase())) {
+    alert("Le champ Accessibilité doit être 'oui' ou 'non'.");
+    form["accessibilte"].focus();
+    return false;
+  }
+
+  const etatsValid = ["en service", "hors service", "en panne"];
+  if (!etatsValid.includes(etat.toLowerCase())) {
+    alert("Le champ État n'est pas valide.");
+    form["etat"].focus();
+    return false;
+  }
+
+  const niveau = parseInt(niveauConfort);
+  if (isNaN(niveau) || niveau < 1 || niveau > 5) {
+    alert("Le niveau de confort doit être un nombre entre 1 et 5.");
+    form["niveau_confort"].focus();
+    return false;
+  }
+
+  return true; 
 }
 </script>
+
 
 
 <?php
@@ -31,8 +65,7 @@ include_once '../../config.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $rapport = new Rapport();
 
-    $rapport->setIdRapport($_POST['id_rapport']);
-    $rapport->setIdVehiculeLie($_POST['id_vehicule_lie']);
+    $rapport->setmatriculeLie($_POST['matricule_lie']);
     $rapport->setUtilisateurNom($_POST['utilisateur_nom']);
     $rapport->setDateSignalement($_POST['date_signalement']);
     $rapport->setTypeProbleme($_POST['type_probleme']);
@@ -117,7 +150,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h6 class="collapse-header">edits:</h6>
             <a class="collapse-item" href="addvehicule.php">add vehicules</a>
             <a class="collapse-item" href="affichevehicule.php">display vehicules</a>
-            <a class="collapse-item" href="modifiervehicule.php">modify vehicules</a>
         </div>
     </div>
 </li>
@@ -368,13 +400,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <h1 class="h4 text-gray-900 mb-4">Ajouter un Rapport</h1>
                     </div>
                     <form class="user mx-auto" name="rapportForm" action="addRapport.php" method="POST" enctype="multipart/form-data" onsubmit="return validateForm();">
-                    <div class="form-group">
-                            <input type="number" class="form-control form-control-user" id="id_rapport"
-                                name="id_rapport" placeholder="ID Rapport" >
-                        </div>
+                    
                         <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="id_vehicule_lie"
-                                name="id_vehicule_lie" placeholder="Matricule du Véhicule" >
+                            <input type="text" class="form-control form-control-user" id="matricule_lie"
+                                name="matricule_lie" placeholder="Matricule du Véhicule" >
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control form-control-user" id="utilisateur_nom"
@@ -385,7 +414,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 name="date_signalement" >
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control form-control-user" id="type_probleme"
+                            <input  class="form-control form-control-user" id="type_probleme"
                                 name="type_probleme" placeholder="Type de problème" >
                         </div>
                         <div class="form-group">
@@ -397,7 +426,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <input type="file" class="form-control-file" id="photo"
                                 name="photo" accept="image/*">
                         </div>
-                        <!-- Champ statut caché avec valeur par défaut -->
                         <input type="hidden" name="statut" value="En attente">
                         <button type="submit" class="btn btn-primary btn-user btn-block" >
                             Ajouter Rapport

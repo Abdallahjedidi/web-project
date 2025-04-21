@@ -1,7 +1,7 @@
 <?php
 class Rapport{
     private $id_rapport;
-    private $id_vehicule_lie;
+    private $matricule_lie;
     private $utilisateur_nom;
     private $date_signalement;
     private $type_probleme;
@@ -13,8 +13,8 @@ class Rapport{
         $this->id_rapport = $id_rapport;
     }
 
-    public function setIdVehiculeLie($id_vehicule_lie) {
-        $this->id_vehicule_lie = $id_vehicule_lie;
+    public function setmatriculeLie($matricule_lie) {
+        $this->matricule_lie = $matricule_lie;
     }
 
     public function setUtilisateurNom($utilisateur_nom) {
@@ -45,8 +45,8 @@ class Rapport{
         return $this->id_rapport;
     }
 
-    public function getIdVehiculeLie() {
-        return $this->id_vehicule_lie;
+    public function getmatriculeLie() {
+        return $this->matricule_lie;
     }
 
     public function getUtilisateurNom() {

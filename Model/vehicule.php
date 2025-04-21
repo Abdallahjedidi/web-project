@@ -1,14 +1,14 @@
 <?php
 class Vehicule {
-    private $id_vehicule;
+    private $matricule;
     private $type;
     private $compagnie;
     private $accessibilte;
     private $etat;
     private $niveau_confort;
 
-    public function setIdVehicule($id_vehicule) {
-        $this->id_vehicule = $id_vehicule;
+    public function setmatricule($matricule) {
+        $this->matricule = $matricule;
     }
 
     public function setType($type) {
@@ -31,8 +31,8 @@ class Vehicule {
         $this->niveau_confort = $niveau_confort;
     }
 
-    public function getIdVehicule() {
-        return $this->id_vehicule;
+    public function getmatricule() {
+        return $this->matricule;
     }
 
     public function getType() {

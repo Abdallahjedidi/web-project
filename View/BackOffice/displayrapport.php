@@ -88,7 +88,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h6 class="collapse-header">edits:</h6>
             <a class="collapse-item" href="addvehicule.php">add vehicules</a>
             <a class="collapse-item" href="affichevehicule.php">display vehicules</a>
-            <a class="collapse-item" href="modifiervehicule.php">modify vehicules</a>
         </div>
     </div>
 </li>
@@ -344,7 +343,7 @@ if (!empty($rapports)) {
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">ID : ' . htmlspecialchars($rapport['id_rapport']) . '</h5>
-                        <p class="card-text"><strong>Matricule du Véhicule :</strong> ' . htmlspecialchars($rapport['id_vehicule_lie']) . '</p>
+                        <p class="card-text"><strong>Matricule du Véhicule :</strong> ' . htmlspecialchars($rapport['matricule_lie']) . '</p>
                         <p class="card-text"><strong>Nom de l\'Utilisateur :</strong> ' . htmlspecialchars($rapport['utilisateur_nom']) . '</p>
                         <p class="card-text"><strong>Date de Signalement :</strong> ' . htmlspecialchars($rapport['date_signalement']) . '</p>
                         <p class="card-text"><strong>Type de Problème :</strong> ' . htmlspecialchars($rapport['type_probleme']) . '</p>

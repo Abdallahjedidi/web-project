@@ -10,6 +10,47 @@ if (isset($_POST['id'])) {
    
 }
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
+    $matricule = $_POST['search'];
+    $controller = new Vehiculec();
+    $vehicules = $controller->rechercher($matricule);
+
+    if ($vehicules) {
+        $vehicule = $vehicules[0];
+        $type = $vehicule['type'];
+        $compagnie = $vehicule['compagnie'];
+        $accessibilte = $vehicule['accessibilte'];
+        $etat = $vehicule['etat'];
+        $niveau_confort = $vehicule['niveau_confort'];
+    }
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
+    $vehicule = new Vehicule();
+
+    if (isset($_POST['matricule'])) {
+        $vehicule->setmatricule($_POST['matricule']);
+    }
+    if (isset($_POST['type'])) {
+        $vehicule->setType($_POST['type']);
+    }
+    if (isset($_POST['compagnie'])) {
+        $vehicule->setCompagnie($_POST['compagnie']);
+    }
+    if (isset($_POST['accessibilte'])) {
+        $vehicule->setAccessibilte($_POST['accessibilte']);
+    }
+    if (isset($_POST['etat'])) {
+        $vehicule->setEtat($_POST['etat']);
+    }
+    if (isset($_POST['niveau_confort'])) {
+        $vehicule->setNiveauConfort($_POST['niveau_confort']);
+    }
+
+    $controller = new vehiculec();
+    $controller->updateVehicule($vehicule);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -74,7 +115,6 @@ if (isset($_POST['id'])) {
             <h6 class="collapse-header">edits:</h6>
             <a class="collapse-item" href="addvehicule.php">add vehicules</a>
             <a class="collapse-item" href="affichevehicule.php">display vehicules</a>
-            <a class="collapse-item" href="modifiervehicule.php">modify vehicules</a>
         </div>
     </div>
 </li>
@@ -342,19 +382,34 @@ if (isset($_POST['id'])) {
                     <tbody>
                         <?php foreach ($liste as $vehicule): ?>
                             <tr>
-                                <td><?= htmlspecialchars($vehicule['id_vehicule']) ?></td>
+                                <td><?= htmlspecialchars($vehicule['matricule']) ?></td>
                                 <td><?= htmlspecialchars($vehicule['type']) ?></td>
                                 <td><?= htmlspecialchars($vehicule['compagnie']) ?></td>
                                 <td><?= htmlspecialchars($vehicule['accessibilte']) ?></td>
                                 <td><?= htmlspecialchars($vehicule['etat']) ?></td>
                                 <td><?= htmlspecialchars($vehicule['niveau_confort']) ?></td>
-                                <td>
-                                    <form action="afficheVehicule.php" method="POST">
-                                    <input type="hidden" name="id" value="<?= $vehicule['id_vehicule'] ?>" />
-                                    <button type="submit" class="btn btn-danger btn-sm">🗑 Supprimer</button>
-                                    </form>
-                                    </button>
-                                </td>
+                                <!-- Table (only relevant part shown) -->
+<td>
+    <form action="afficheVehicule.php" method="POST" style="display:inline-block;">
+        <input type="hidden" name="id" value="<?= $vehicule['matricule'] ?>" />
+        <button type="submit" class="btn btn-danger btn-sm">🗑 Supprimer</button>
+    </form>
+    
+    <button type="button"
+    class="btn btn-warning btn-sm"
+    data-toggle="modal"
+    data-target="#modifierModal"
+    data-matricule="<?= htmlspecialchars($vehicule['matricule']) ?>"
+    data-type="<?= htmlspecialchars($vehicule['type']) ?>"
+    data-compagnie="<?= htmlspecialchars($vehicule['compagnie']) ?>"
+    data-accessibilte="<?= htmlspecialchars($vehicule['accessibilte']) ?>"
+    data-etat="<?= htmlspecialchars($vehicule['etat']) ?>"
+    data-niveau_confort="<?= htmlspecialchars($vehicule['niveau_confort']) ?>">
+    ✏️ Modifier
+</button>
+
+</td>
+
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -362,6 +417,71 @@ if (isset($_POST['id'])) {
             </div>
         </div>
     </div>
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('#modifierModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget);
+
+    $('#modal-matricule').val(button.data('matricule'));
+    $('#modal-type').val(button.data('type'));
+    $('#modal-compagnie').val(button.data('compagnie'));
+    $('#modal-accessibilte').val(button.data('accessibilte'));
+    $('#modal-etat').val(button.data('etat'));
+    $('#modal-niveau_confort').val(button.data('niveau_confort'));
+  });
+});
+console.log("Modal triggered");
+console.log("Matricule:", button.data('matricule'));
+
+</script>
+
+<!-- Modal -->
+<div class="modal fade" id="modifierModal" tabindex="-1" role="dialog" aria-labelledby="modifierModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <form class="user mx-auto" method="POST" action="afficheVehicule.php" style="max-width: 400px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Modifier Véhicule</h5>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <input type="hidden" id="modal-matricule" name="matricule">
+
+        <div class="form-group">
+            <label for="modal-type">Type:</label>
+            <input type="text" class="form-control" id="modal-type" name="type">
+        </div>
+
+        <div class="form-group">
+            <label for="modal-compagnie">Compagnie:</label>
+            <input type="text" class="form-control" id="modal-compagnie" name="compagnie">
+        </div>
+
+        <div class="form-group">
+            <label for="modal-accessibilte">Accessibilité:</label>
+            <input type="text" class="form-control" id="modal-accessibilte" name="accessibilte">
+        </div>
+
+        <div class="form-group">
+            <label for="modal-etat">État:</label>
+            <input type="text" class="form-control" id="modal-etat" name="etat">
+        </div>
+
+        <div class="form-group">
+            <label for="modal-niveau_confort">Niveau de confort:</label>
+            <input type="number" class="form-control" id="modal-niveau_confort" name="niveau_confort">
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" name="update" class="btn btn-primary btn-user btn-block w-100">✅ Mettre à jour</button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
 
 
@@ -423,6 +543,7 @@ if (isset($_POST['id'])) {
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
+
 
 </body>
 

@@ -9,12 +9,12 @@ class Rapportc{
 
     try {
         $query = $db->prepare(
-            "INSERT INTO rapport (id_rapport, id_vehicule_lie, utilisateur_nom, date_signalement, type_probleme, description, photo, statut) 
-             VALUES (:id_rapport, :id_vehicule_lie, :utilisateur_nom, :date_signalement, :type_probleme, :description, :photo, :statut)"
+            "INSERT INTO rapport (id_rapport, matricule_lie, utilisateur_nom, date_signalement, type_probleme, description, photo, statut) 
+             VALUES (:id_rapport, :matricule_lie, :utilisateur_nom, :date_signalement, :type_probleme, :description, :photo, :statut)"
         );
 
         $query->bindValue(':id_rapport', $rapport->getIdRapport(), PDO::PARAM_INT);
-        $query->bindValue(':id_vehicule_lie', $rapport->getIdVehiculeLie(), PDO::PARAM_STR);
+        $query->bindValue(':matricule_lie', $rapport->getmatriculeLie(), PDO::PARAM_STR);
         $query->bindValue(':utilisateur_nom', $rapport->getUtilisateurNom(), PDO::PARAM_STR);
         $query->bindValue(':date_signalement', $rapport->getDateSignalement(), PDO::PARAM_STR);
         $query->bindValue(':type_probleme', $rapport->getTypeProbleme(), PDO::PARAM_STR);

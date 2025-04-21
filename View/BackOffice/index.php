@@ -61,7 +61,6 @@
                         <h6 class="collapse-header">edits:</h6>
                         <a class="collapse-item" href="addvehicule.php">add vehicules</a>
                         <a class="collapse-item" href="affichevehicule.php">display vehicules</a>
-                        <a class="collapse-item" href="modifiervehicule.php">modify vehicules</a>
                     </div>
                 </div>
             </li>

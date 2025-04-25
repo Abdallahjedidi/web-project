@@ -3,25 +3,36 @@
 require_once '../../controller/espaceController.php';
 require_once '../../controller/activiteC.php';
 require_once '../../controller/reserverC.php';
-$activiteC= new activiteController();
+
+$activiteC = new activiteController();
 $reservationC = new reserverController();
 $reservationC = $reservationC->listReserver();
 $activiteC = $activiteC->listActivite();
 $controller = new espaceController();
-$Pc = $controller->listEspace();
 
+// Traitement des filtres (tri, recherche, etc.)
+if (isset($_GET['Search']) && !empty($_GET['Search'])) {
+    $tabP = $controller->RechercheB($_GET['Search']);
+} elseif (isset($_GET['id'])) {
+    $tabP = $controller->TriEspace();
+} elseif (isset($_GET['superficie'])) {
+    $tabP = $controller->Trisup();
+} elseif (isset($_GET['superficie_desc'])) {
+    $tabP = $controller->Trisupdesc();
+} else {
+    $tabP = $controller->listEspace();
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-
     <title>SB Admin 2 - Tables</title>
 
     <!-- Stylesheets -->
@@ -30,7 +41,30 @@ $Pc = $controller->listEspace();
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .badge-success {
+            background-color:rgb(16, 129, 215); /* Vert pour disponible */
+            color: white;
+        }
+
+        .badge-danger {
+            background-color: #dc3545; /* Rouge pour occupé */
+            color: white;
+        }
+
+        .badge-warning {
+            background-color: #ffc107; /* Jaune pour en maintenance */
+            color: black;
+        }
+
+        .badge-secondary {
+            background-color: #6c757d; /* Gris pour les autres statuts ou défaut */
+            color: white;
+        }
+    </style>
 </head>
+
 
 <body id="page-top">
 
@@ -45,21 +79,27 @@ $Pc = $controller->listEspace();
                 </div>
                 <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
             </a>
+
             <hr class="sidebar-divider my-0">
+
             <li class="nav-item">
                 <a class="nav-link" href="index.html">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
+
             <hr class="sidebar-divider">
+
             <li class="nav-item active">
                 <a class="nav-link" href="tables.html">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Espace</span>
                 </a>
             </li>
+
             <hr class="sidebar-divider d-none d-md-block">
+
             <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
             </div>
@@ -74,21 +114,29 @@ $Pc = $controller->listEspace();
 
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <form class="form-inline">
-                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                            <i class="fa fa-bars"></i>
-                        </button>
-                    </form>
-                    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                        <div class="input-group">
-                            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
-                            <div class="input-group-append">
-                                <button class="btn btn-primary" type="button">
-                                    <i class="fas fa-search fa-sm"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                    
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Search Form + Buttons -->
+                    <div class="d-flex align-items-center ml-3">
+                        <form method="GET" class="d-flex align-items-center">
+                            <input type="text" name="Search" id="Search" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" style="max-width: 300px;">
+
+                            <button class="btn btn-primary ms-2" type="submit">
+                                <i class="fas fa-search fa-sm"></i>
+                            </button>
+
+                            <a href="tables.php" class="btn btn-danger ms-2">Reset</a>
+                        </form>
+
+                        <a href="activité.php" class="btn btn-primary ml-3">Activités</a>
+                        <a href="reserver.php" class="btn btn-primary ml-2">Réserver</a>
+                        <a href="tables.php" class="btn btn-primary ml-2">Espace</a>
+                    </div>
+
                 </nav>
                 <!-- End of Topbar -->
 
@@ -100,7 +148,8 @@ $Pc = $controller->listEspace();
                             <h3>Liste des Espaces</h3>
                             <a href="ajouterEspace.php" class="btn btn-primary">+ Ajouter un Espace</a>
                         </div>
-
+                        </section>
+        
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover align-middle text-center">
                                 <thead class="table-dark">
@@ -117,8 +166,8 @@ $Pc = $controller->listEspace();
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($Pc as $espace): ?>
-                                        <tr>
+                                <?php foreach ($tabP as $espace): ?>
+                                    <tr>
                                             <td><?= $espace['id']; ?></td>
                                             <td><?= htmlspecialchars($espace['nom']); ?></td>
                                             <td><?= htmlspecialchars($espace['description']); ?></td>
@@ -133,21 +182,22 @@ $Pc = $controller->listEspace();
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <?php
-                                                    $statut = strtolower($espace['statut']);
-                                                    $badgeClass = 'secondary';
-                                                    if ($statut === 'disponible') $badgeClass = 'success';
-                                                    elseif ($statut === 'occupé') $badgeClass = 'danger';
-                                                    elseif ($statut === 'en maintenance') $badgeClass = 'warning';
-                                                ?>
-                                                <span class="badge badge-<?= $badgeClass; ?>">
-                                                    <?= ucfirst($espace['statut']); ?>
-                                                </span>
-                                            </td>
+    <?php
+        $statut = strtolower($espace['statut']);
+        $badgeClass = 'secondary'; // classe par défaut
+        if ($statut === 'disponible') $badgeClass = 'success';
+        elseif ($statut === 'occupé') $badgeClass = 'danger';
+        elseif ($statut === 'en maintenance') $badgeClass = 'warning';
+    ?>
+    <span class="badge badge-<?= $badgeClass; ?>">
+        <?= ucfirst($espace['statut']); ?>
+    </span>
+</td>
+
                                             <td>
                                                 <div class="d-flex justify-content-center gap-2">
                                                     <form action="modifierEspace.php" method="get" style="margin-right: 5px;">
-                                                        <input type="hidden" value="<?= $espace['id']; ?>" name="id">
+                                                        <input type="hidden" name="id" value="<?= $espace['id']; ?>">
                                                         <button type="submit" class="btn btn-sm btn-warning">Modifier</button>
                                                     </form>
                                                     <a href="supprimer.php?idP=<?= $espace['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet espace ?')">Supprimer</a>
@@ -160,132 +210,32 @@ $Pc = $controller->listEspace();
                         </div>
                     </div>
 
+                    <div class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" href="tables.php" role="button" id="dropdownMenuLink"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Trier By
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <li><a class="dropdown-item" href="tables.php?id">Pack Name</a></li>
+                <li><a class="dropdown-item" href="tables.php?superficie">Price in ascending order</a></li>
+                <li><a class="dropdown-item" href="tables.php?superficie_desc">Price in descending order</a></li>
+            </ul>
+        </div>
+        <section class="is-hero-bar">
+            <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+            </div>
+
                 </div>
-
-
-                <!-- table activite  -->
-                 <div class="container-fluid">
-
-
-
-
-            <div class="container mt-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3>Liste des Activités</h3>
-                        <a href="ajouteract.php" class="btn btn-primary">+ Ajouter une Activité</a>
-                    </div>
-
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle text-center">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Titre</th>
-                                <th>Description</th>
-                                <th>Date</th>
-                                <th>Heure</th>
-                                <th>Type</th>
-                                <th>Espace ID</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($activiteC as $activite): ?>
-                                <tr>
-                                    <td><?= $activite['id']; ?></td>
-                                    <td><?= htmlspecialchars($activite['titre']); ?></td>
-                                    <td><?= htmlspecialchars($activite['description']); ?></td>
-                                    <td><?= htmlspecialchars($activite['date_activite']); ?></td>
-                                    <td><?= htmlspecialchars($activite['heure']); ?></td>
-                                    <td>
-                                        <?php
-                                            $type = strtolower($activite['type_activite']);
-                                            $badgeClass = 'secondary';
-                                            if ($type === 'écologie') $badgeClass = 'success';
-                                            elseif ($type === 'sport') $badgeClass = 'primary';
-                                            elseif ($type === 'culture') $badgeClass = 'info';
-                                            elseif ($type === 'autre') $badgeClass = 'dark';
-                                        ?>
-                                        <span class="badge bg-<?= $badgeClass; ?>">
-                                            <?= ucfirst($activite['type_activite']); ?>
-                                        </span>
-                                    </td>
-                                    <td><?= $activite['espace_id'] ?? '<span class="text-muted">Aucun</span>'; ?></td>
-                                    <td>
-                                        <div class="d-flex justify-content-center gap-2">
-                                            <form action="modAct.php" method="get" style="margin-right: 5px;">
-                                                <input type="hidden" value="<?= $activite['id']; ?>" name="id">
-                                                <button type="submit" class="btn btn-sm btn-warning">Modifier</button>
-                                            </form>
-                                            <a href="suppact.php?id=<?= $activite['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette activité ?')">Supprimer</a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-
+                <!-- End Page Content -->
 
             </div>
-            <div class="container-fluid">
-
-
-
-                    <div class="table-responsive">
-    <table class="table table-bordered table-hover align-middle text-center">
-        <thead class="table-dark">
-        <h3>Liste des reservations</h3>
-
-            <tr>
-                <th>ID</th>
-                <th>Activité ID</th>
-                <th>Utilisateur ID</th>
-                <th>Email</th>
-                <th>Numéro de téléphone</th>
-                <th>Date d'inscription</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($reservationC as $reservation): ?>
-                <tr>
-                    <td><?= $reservation['id']; ?></td>
-                    <td><?= htmlspecialchars($reservation['activite_id']); ?></td>
-                    <td><?= htmlspecialchars($reservation['utilisateur_id']); ?></td>
-                    <td><?= htmlspecialchars($reservation['email']); ?></td>
-                    <td><?= htmlspecialchars($reservation['numtlf']); ?></td>
-                    <td><?= htmlspecialchars($reservation['date_inscription']); ?></td>
-                    <td>
-                        <div class="d-flex justify-content-center gap-2">
-
-                            <a href="suppreservation.php?id=<?= $reservation['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?')">Supprimer</a>
-                        </div>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
-
-
-
-            </div>
-
-
-
-                <!-- End of Page Content -->
-
-            </div>
-            <!-- End of Main Content -->
+            <!-- End Main Content -->
 
         </div>
-        <!-- End of Content Wrapper -->
+        <!-- End Content Wrapper -->
 
     </div>
-    <!-- End of Wrapper -->
+    <!-- End Wrapper -->
 
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
@@ -323,3 +273,4 @@ $Pc = $controller->listEspace();
 </body>
 
 </html>
+

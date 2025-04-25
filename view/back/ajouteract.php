@@ -65,13 +65,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="col-md-8 col-lg-6">
                 <div class="card">
                     <div class="card-header text-center">
-                        <h3 class="mb-0">Ajouter un Espace</h3>
+                        <h3 class="mb-0">Ajouter une activité</h3>
                     </div>
                     <div class="card-body p-4">
                     <form method="POST">
         <div class="mb-3">
             <label for="titre" class="form-label">Titre</label>
-            <input type="text" class="form-control" name="titre" id="titre" required>
+            <input type="text" class="form-control" name="titre" id="titre" >
         </div>
 
         <div class="mb-3">
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="mb-3">
             <label for="type_activite" class="form-label">Type d'activité</label>
-            <select class="form-select" name="type_activite" id="type_activite" required>
+            <select class="form-select" name="type_activite" id="type_activite" >
                 <option value="">-- Sélectionnez --</option>
                 <option value="écologie">Écologie</option>
                 <option value="sport">Sport</option>
@@ -115,14 +115,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
         <button type="submit" class="btn btn-success">Ajouter l'activité</button>
-        <a href="listeActivite.php" class="btn btn-secondary">Retour à la liste</a>
     </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    <script src="js/controleactivité.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

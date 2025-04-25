@@ -97,5 +97,54 @@ class espaceController {
         }
     }
     
+    
+public function RechercheB($searchTerm)
+{
+    $sql = "SELECT * FROM espace WHERE adresse LIKE '%$searchTerm%' OR nom = '$searchTerm'";
+    $db = connexion::getConnexion();
+
+    try {
+        $query = $db->prepare($sql);
+        $query->execute();
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        die('Erreur: ' . $e->getMessage());
+    }
+}
+public function TriEspace() {
+    $sql = "SELECT * FROM espace ORDER BY id ASC"; // ou un autre tri selon les besoins
+    $db = connexion::getConnexion();
+    try {
+        $liste = $db->query($sql);
+        return $liste->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        die('Erreur: ' . $e->getMessage());
+    }
+}
+
+
+
+function Trisup() {
+    $sql = "SELECT * FROM espace ORDER BY superficie ASC";
+    $db = connexion::getConnexion();
+    try {
+        $liste = $db->query($sql);
+        return $liste;
+    } catch (Exception $e) {
+        die('Erreur: ' . $e->getMessage());
+    }
+}
+
+function Trisupdesc() {
+    $sql = "SELECT * FROM espace ORDER BY superficie DESC";
+    $db = connexion::getConnexion();
+    try {
+        $liste = $db->query($sql);
+        return $liste;
+    } catch (Exception $e) {
+        die('Erreur: ' . $e->getMessage());
+    }
+}
+
 }
 ?>

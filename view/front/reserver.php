@@ -179,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <form method="POST" action="" onsubmit="return validateForm()">
     <div class="form-group">
         <label for="email">Adresse Email *</label>
-        <input type="email" class="form-control" id="email" name="email" >
+        <input  class="form-control" id="email" name="email" >
     </div>
     
     <div class="form-group">
@@ -225,6 +225,7 @@ function validateForm() {
             <p>&copy; <span id="displayYear"></span> All Rights Reserved By <a href="https://html.design/">Free Html Templates</a></p>
         </div>
     </footer>
+    <script src="js/reserver.js"></script>
 
     <!-- Scripts -->
     <script src="js/jquery-3.4.1.min.js"></script>

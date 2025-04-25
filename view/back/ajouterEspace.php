@@ -79,7 +79,7 @@ if (
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
         .card-header {
-            background-color: #00796b;
+            background-color:rgb(23, 154, 230);
             color: white;
             border-radius: 15px 15px 0 0;
         }
@@ -87,12 +87,12 @@ if (
             border-radius: 10px;
         }
         .btn-success {
-            background-color: #00796b;
+            background-color:rgb(19, 123, 215);
             border: none;
             border-radius: 10px;
         }
         .btn-success:hover {
-            background-color: #004d40;
+            background-color:rgb(9, 169, 249);
         }
     </style>
 </head>

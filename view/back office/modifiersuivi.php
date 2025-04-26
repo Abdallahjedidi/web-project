@@ -1,19 +1,36 @@
 <?php
-include_once '../../controller/signalementctrl.php';
+include_once '../../Controller/SuiviC.php';
+include_once '../../Model/Suivi.php';
 include_once '../../config.php';
-include_once '../../Model/signalement.php';
 
+$suivic = new SuiviC();
+
+// Récupérer le suivi
+if (isset($_GET['id_suivi'])) {
+    $id_suivi = $_GET['id_suivi'];
+    $suiviData = $suivic->recupererSuivi($id_suivi);
+
+    if (!$suiviData) {
+        die('Suivi introuvable.');
+    }
+} else {
+    die('ID non spécifié.');
+}
+
+// Modifier suivi si formulaire soumis
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $signalement = new Signalement();
+    $suivi = new Suivi();
+    $suivi->setIdSuivi($_POST['id_suivi']);
+    $suivi->setIdSignalement($_POST['id_signalement']);
+    $suivi->setDateSuivi($_POST['date_suivi']);
+    $suivi->setServiceResponsable($_POST['service_responsable']);
+    $suivi->setStatut($_POST['statut']);
+    $suivi->setDescription($_POST['description']);
 
-    $signalement->setTitre($_POST['titre']);
-    $signalement->setDescription($_POST['description']);
-    $signalement->setEmplacement($_POST['emplacement']);
-    $signalement->setDateSignalement($_POST['date_signalement']);
-    $signalement->setStatut($_POST['statut']);
+    $suivic->modifierSuivi($suivi);
 
-    $signalementc = new SignalementC();
-    $signalementc->addSignalement($signalement);
+    header("Location: affichesuivi.php");
+    exit();
 }
 ?>
 
@@ -24,16 +41,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Ajouter un signalement</title>
+    <title>Modifier Suivi</title>
 
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,700,800,900" rel="stylesheet">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
 
 <div id="wrapper">
+
     <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php">
@@ -66,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h6 class="collapse-header">Édition :</h6>
                     <a class="collapse-item" href="addsignalement.php">Ajouter Signalement</a>
                     <a class="collapse-item" href="affichesignalement.php">Afficher Signalements</a>
-                    <a class="collapse-item" href="modifiersignalement.php">Modifier Signalement</a>
+                    <a class="collapse-item" href="rapport_signalement_suivi.php">Modifier Signalement</a>
                 </div>
             </div>
         </li>
@@ -83,13 +100,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h6 class="collapse-header">Édition :</h6>
                     <a class="collapse-item" href="addsuivi.php">Ajouter Suivi</a>
                     <a class="collapse-item" href="affichesuivi.php">Afficher Suivis</a>
-                    <a class="collapse-item" href="rapport_signalement_suivi.php">rapport Suivi</a>
+                    <a class="collapse-item" href="modifiersuivi.php">Modifier Suivi</a>
                 </div>
             </div>
         </li>
     </ul>
+    <!-- End of Sidebar -->
 
-    <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
 
@@ -108,68 +125,82 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </ul>
             </nav>
 
-            <!-- Formulaire -->
+            <!-- Content -->
             <div class="container-fluid">
-                <h1 class="text-center">Ajouter un Signalement</h1>
+
+                <h1 class="text-center mb-4">Modifier un Suivi</h1>
 
                 <div class="card o-hidden border-0 shadow-lg my-5">
                     <div class="card-body p-0">
                         <div class="row justify-content-center">
                             <div class="col-lg-7">
                                 <div class="p-5">
+
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Formulaire de Signalement</h1>
+                                        <h1 class="h4 text-gray-900 mb-4">Formulaire de Modification</h1>
                                     </div>
-                                    <form class="user mx-auto" action="addsignalement.php" method="POST" style="max-width: 400px;">
+
+                                    <form class="user" method="POST">
+                                        <input type="hidden" name="id_suivi" value="<?php echo $suiviData['id_suivi']; ?>">
+
                                         <div class="form-group">
-                                            <input type="text" class="form-control form-control-user" name="titre" placeholder="Titre" required>
+                                            <input type="text" class="form-control form-control-user" name="id_signalement" value="<?php echo $suiviData['id_signalement']; ?>" required placeholder="ID Signalement">
                                         </div>
+
                                         <div class="form-group">
-                                            <textarea class="form-control form-control-user" name="description" placeholder="Description" required></textarea>
+                                            <input type="date" class="form-control form-control-user" name="date_suivi" value="<?php echo $suiviData['date_suivi']; ?>" required>
                                         </div>
+
                                         <div class="form-group">
-                                            <input type="text" class="form-control form-control-user" name="emplacement" placeholder="Emplacement" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="date" class="form-control form-control-user" name="date_signalement" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <select class="form-control form-control-user" name="statut" required>
-                                                <option value="" disabled selected hidden>Choisir un statut...</option>
-                                                <option value="En attente">En attente</option>
-                                                <option value="Résolu">Résolu</option>
-                                                <option value="En cours">En cours</option>
+                                            <select class="form-control form-control-user" name="service_responsable" required>
+                                                <option value="" disabled>Choisir un service...</option>
+                                                <option value="Municipalité" <?php if($suiviData['service_responsable']=='Municipalité') echo 'selected'; ?>>Municipalité</option>
+                                                <option value="Police" <?php if($suiviData['service_responsable']=='Police') echo 'selected'; ?>>Police</option>
+                                                <option value="STEG" <?php if($suiviData['service_responsable']=='STEG') echo 'selected'; ?>>STEG</option>
+                                                <option value="SONEDE" <?php if($suiviData['service_responsable']=='SONEDE') echo 'selected'; ?>>SONEDE</option>
+                                                <option value="Autre" <?php if($suiviData['service_responsable']=='Autre') echo 'selected'; ?>>Autre</option>
                                             </select>
                                         </div>
+
+                                        <div class="form-group">
+                                            <select class="form-control form-control-user" name="statut" required>
+                                                <option value="" disabled>Choisir un statut...</option>
+                                                <option value="En attente" <?php if($suiviData['statut']=='En attente') echo 'selected'; ?>>En attente</option>
+                                                <option value="En cours" <?php if($suiviData['statut']=='En cours') echo 'selected'; ?>>En cours</option>
+                                                <option value="Résolu" <?php if($suiviData['statut']=='Résolu') echo 'selected'; ?>>Résolu</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <textarea class="form-control form-control-user" name="description" placeholder="Description..." rows="3" required><?php echo htmlspecialchars($suiviData['description']); ?></textarea>
+                                        </div>
+
                                         <button type="submit" class="btn btn-primary btn-user btn-block">
-                                            Ajouter Signalement
+                                            Modifier Suivi
                                         </button>
+                                        <a href="affichesuivi.php" class="btn btn-secondary btn-user btn-block">
+                                            Retour à la liste
+                                        </a>
                                     </form>
-                                    <hr>
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
 
         </div>
-
-        <!-- Footer -->
-        <footer class="sticky-footer bg-white">
-            <div class="container my-auto">
-                <div class="copyright text-center my-auto">
-                    <span>Copyright © TonSite 2025</span>
-                </div>
-            </div>
-        </footer>
     </div>
+
 </div>
 
-<!-- Scripts -->
+<!-- JS -->
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 <script src="js/sb-admin-2.min.js"></script>
+
 </body>
 </html>

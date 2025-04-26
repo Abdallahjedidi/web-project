@@ -1,19 +1,22 @@
 <?php
-include_once '../../controller/signalementctrl.php';
+include_once '../../Controller/SuiviC.php';
+include_once '../../Controller/signalementctrl.php';
+include_once '../../Model/Suivi.php';
 include_once '../../config.php';
-include_once '../../Model/signalement.php';
+
+$signalementC = new SignalementC();
+$listeSignalements = $signalementC->afficherSignalements();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $signalement = new Signalement();
+    $suivi = new Suivi();
+    $suivi->setIdSignalement($_POST['id_signalement']);
+    $suivi->setDateSuivi($_POST['date_suivi']);
+    $suivi->setServiceResponsable($_POST['service_responsable']);
+    $suivi->setStatut($_POST['statut']);
+    $suivi->setDescription($_POST['description']);
 
-    $signalement->setTitre($_POST['titre']);
-    $signalement->setDescription($_POST['description']);
-    $signalement->setEmplacement($_POST['emplacement']);
-    $signalement->setDateSignalement($_POST['date_signalement']);
-    $signalement->setStatut($_POST['statut']);
-
-    $signalementc = new SignalementC();
-    $signalementc->addSignalement($signalement);
+    $suivic = new SuiviC();
+    $suivic->ajouterSuivi($suivi);
 }
 ?>
 
@@ -24,10 +27,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Ajouter un signalement</title>
+    <title>Ajouter un Suivi</title>
 
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,700,800,900" rel="stylesheet">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
 </head>
 
@@ -89,7 +91,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </li>
     </ul>
 
-    <!-- Content Wrapper -->
+    <!-- End of Sidebar -->
+
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
 
@@ -110,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <!-- Formulaire -->
             <div class="container-fluid">
-                <h1 class="text-center">Ajouter un Signalement</h1>
+                <h1 class="text-center">Ajouter un Suivi</h1>
 
                 <div class="card o-hidden border-0 shadow-lg my-5">
                     <div class="card-body p-0">
@@ -118,31 +121,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="col-lg-7">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Formulaire de Signalement</h1>
+                                        <h1 class="h4 text-gray-900 mb-4">Formulaire de Suivi</h1>
                                     </div>
-                                    <form class="user mx-auto" action="addsignalement.php" method="POST" style="max-width: 400px;">
+                                    <form class="user mx-auto" action="addsuivi.php" method="POST" style="max-width: 400px;">
                                         <div class="form-group">
-                                            <input type="text" class="form-control form-control-user" name="titre" placeholder="Titre" required>
+                                            <input type="text" class="form-control form-control-user" name="id_signalement" id="id_signalement" placeholder="ID Signalement" required>
                                         </div>
                                         <div class="form-group">
-                                            <textarea class="form-control form-control-user" name="description" placeholder="Description" required></textarea>
+                                            <input type="date" class="form-control form-control-user" name="date_suivi" required>
                                         </div>
                                         <div class="form-group">
-                                            <input type="text" class="form-control form-control-user" name="emplacement" placeholder="Emplacement" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="date" class="form-control form-control-user" name="date_signalement" required>
+                                            <select class="form-control form-control-user" name="service_responsable" required>
+                                                <option value="" disabled selected hidden>Choisir un service...</option>
+                                                <option value="Municipalité">Municipalité</option>
+                                                <option value="Police">Police</option>
+                                                <option value="STEG">STEG</option>
+                                                <option value="SONEDE">SONEDE</option>
+                                                <option value="Autre">Autre</option>
+                                            </select>
                                         </div>
                                         <div class="form-group">
                                             <select class="form-control form-control-user" name="statut" required>
                                                 <option value="" disabled selected hidden>Choisir un statut...</option>
                                                 <option value="En attente">En attente</option>
-                                                <option value="Résolu">Résolu</option>
                                                 <option value="En cours">En cours</option>
+                                                <option value="Résolu">Résolu</option>
                                             </select>
                                         </div>
+                                        <div class="form-group">
+                                            <textarea class="form-control form-control-user" name="description" placeholder="Description..." rows="3" required></textarea>
+                                        </div>
                                         <button type="submit" class="btn btn-primary btn-user btn-block">
-                                            Ajouter Signalement
+                                            Ajouter Suivi
                                         </button>
                                     </form>
                                     <hr>
@@ -151,6 +161,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
                 </div>
+
+                <!-- Tableau Signalements -->
+                <div class="container-fluid mt-5">
+                    <h2 class="text-center">Liste des Signalements</h2>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Description</th>
+                                    <th>Emplacement</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($listeSignalements as $signalement): ?>
+                                    <tr>
+                                        <td><?php echo $signalement['id_signalement']; ?></td>
+                                        <td><?php echo htmlspecialchars($signalement['titre']); ?></td>
+                                        <td><?php echo htmlspecialchars($signalement['description']); ?></td>
+                                        <td><?php echo htmlspecialchars($signalement['emplacement']); ?></td>
+                                        <td><?php echo htmlspecialchars($signalement['date_signalement']); ?></td>
+                                        <td><?php echo htmlspecialchars($signalement['statut']); ?></td>
+                                        <td>
+                                            <button class="btn btn-success btn-sm" onclick="remplirIdSignalement('<?php echo $signalement['id_signalement']; ?>')">
+                                                Ajouter Suivi
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
 
         </div>
@@ -163,7 +212,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
             </div>
         </footer>
+
     </div>
+
 </div>
 
 <!-- Scripts -->
@@ -171,5 +222,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 <script src="js/sb-admin-2.min.js"></script>
+
+<script>
+function remplirIdSignalement(id) {
+    document.getElementById('id_signalement').value = id;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
 </body>
 </html>

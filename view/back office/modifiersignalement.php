@@ -58,45 +58,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
 
         <!-- Sidebar -->
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-laugh-wink"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+        </a>
 
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+        <hr class="sidebar-divider my-0">
+
+        <li class="nav-item">
+            <a class="nav-link" href="index.php">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Dashboard</span>
             </a>
+        </li>
 
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0">
+        <hr class="sidebar-divider">
 
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="index.php">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
-            </li>
-
-            <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                    aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>Signalements</span>
-                </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Gestion:</h6>
-                        <a class="collapse-item" href="addsignalement.php">Ajouter signalement</a>
-                        <a class="collapse-item" href="affichesignalement.php">Afficher signalements</a>
-                        <a class="collapse-item" href="modifiersignalement.php">Modifier signalement</a>
-                    </div>
+        <!-- Menu Signalement -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSignalement"
+               aria-expanded="true" aria-controls="collapseSignalement">
+                <i class="fas fa-fw fa-cog"></i>
+                <span>Signalements</span>
+            </a>
+            <div id="collapseSignalement" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Édition :</h6>
+                    <a class="collapse-item" href="addsignalement.php">Ajouter Signalement</a>
+                    <a class="collapse-item" href="affichesignalement.php">Afficher Signalements</a>
+                    <a class="collapse-item" href="modifiersignalement.php">Modifier Signalement</a>
                 </div>
-            </li>
+            </div>
+        </li>
 
+        <!-- Menu Suivi -->
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSuivi"
+               aria-expanded="true" aria-controls="collapseSuivi">
+                <i class="fas fa-fw fa-wrench"></i>
+                <span>Suivis</span>
+            </a>
+            <div id="collapseSuivi" class="collapse" aria-labelledby="headingSuivi" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Édition :</h6>
+                    <a class="collapse-item" href="addsuivi.php">Ajouter Suivi</a>
+                    <a class="collapse-item" href="affichesuivi.php">Afficher Suivis</a>
+                    <a class="collapse-item" href="rapport_signalement_suivi.php">rapport Suivi</a>
+                </div>
+            </div>
+        </li>
+    </ul>
 
-
-        </ul>
         <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->

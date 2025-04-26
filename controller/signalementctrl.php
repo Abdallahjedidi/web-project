@@ -29,39 +29,26 @@ class SignalementC {
         $db = config::getConnection();
         $errors = [];
 
-        // Validation ID
-        if (empty($signalement->getIdSignalement())) {
-            $errors[] = "L'ID est obligatoire";
-        } elseif (!ctype_digit($signalement->getIdSignalement())) {
-            $errors[] = "L'ID doit être un nombre";
+        if (empty($signalement->getTitre()) || !preg_match('/[a-zA-ZÀ-ÿ]/u', $signalement->getTitre())) {
+            $errors[] = "Le titre est obligatoire et doit contenir des lettres.";
         }
 
-        // Validation Titre
-        if (empty($signalement->getTitre())) {
-            $errors[] = "Le titre est obligatoire";
-        } elseif (!preg_match('/[a-zA-ZÀ-ÿ]/u', $signalement->getTitre())) {
-            $errors[] = "Le titre doit contenir des lettres";
+        if (empty($signalement->getDescription()) || !preg_match('/[a-zA-ZÀ-ÿ]/u', $signalement->getDescription())) {
+            $errors[] = "La description est obligatoire et doit contenir des lettres.";
         }
 
-        // Validation Description
-        if (empty($signalement->getDescription())) {
-            $errors[] = "La description est obligatoire";
-        } elseif (!preg_match('/[a-zA-ZÀ-ÿ]/u', $signalement->getDescription())) {
-            $errors[] = "La description doit contenir des lettres";
-        }
-
-        // Validation autres champs
         if (empty($signalement->getEmplacement())) {
-            $errors[] = "L'emplacement est obligatoire";
-        }
-        if (empty($signalement->getDateSignalement())) {
-            $errors[] = "La date est obligatoire";
-        }
-        if (empty($signalement->getStatut())) {
-            $errors[] = "Le statut est obligatoire";
+            $errors[] = "L'emplacement est obligatoire.";
         }
 
-        // Affichage erreurs
+        if (empty($signalement->getDateSignalement())) {
+            $errors[] = "La date est obligatoire.";
+        }
+
+        if (empty($signalement->getStatut())) {
+            $errors[] = "Le statut est obligatoire.";
+        }
+
         if (!empty($errors)) {
             foreach ($errors as $i => $error) {
                 $this->showMessage('danger', '❌ '.htmlspecialchars($error), $i);
@@ -69,17 +56,15 @@ class SignalementC {
             return false;
         }
 
-        // Insertion
         try {
             $query = $db->prepare("
                 INSERT INTO signalement 
-                (id_signalement, titre, description, emplacement, date_signalement, statut)
+                (titre, description, emplacement, date_signalement, statut)
                 VALUES 
-                (:id_signalement, :titre, :description, :emplacement, :date_signalement, :statut)
+                (:titre, :description, :emplacement, :date_signalement, :statut)
             ");
 
             $success = $query->execute([
-                ':id_signalement' => $signalement->getIdSignalement(),
                 ':titre' => $signalement->getTitre(),
                 ':description' => $signalement->getDescription(),
                 ':emplacement' => $signalement->getEmplacement(),
@@ -88,10 +73,10 @@ class SignalementC {
             ]);
 
             if ($success) {
-                $this->showMessage('success', '✅ Signalement ajouté !');
+                $this->showMessage('success', '✅ Signalement ajouté avec succès !');
                 return true;
             }
-            
+
             $this->showMessage('danger', '❌ Erreur lors de l\'ajout');
             return false;
 
@@ -102,7 +87,7 @@ class SignalementC {
     }
 
     public function deleteSignalement($id_signalement) {
-        $db = Config::getConnection();
+        $db = config::getConnection();
         try {
             $query = $db->prepare("DELETE FROM signalement WHERE id_signalement = :id_signalement");
             $query->execute([':id_signalement' => $id_signalement]);
@@ -118,33 +103,28 @@ class SignalementC {
         $db = config::getConnection();
         $errors = [];
 
-        // Validations (identique à addSignalement)
-        if (empty($signalement->getIdSignalement())) {
-            $errors[] = "L'ID est obligatoire";
-        } elseif (!ctype_digit($signalement->getIdSignalement())) {
-            $errors[] = "L'ID doit être un nombre";
+        if (empty($signalement->getIdSignalement()) || !ctype_digit((string)$signalement->getIdSignalement())) {
+            $errors[] = "ID invalide ou manquant pour la mise à jour.";
         }
 
-        if (empty($signalement->getTitre())) {
-            $errors[] = "Le titre est obligatoire";
-        } elseif (!preg_match('/[a-zA-ZÀ-ÿ]/u', $signalement->getTitre())) {
-            $errors[] = "Le titre doit contenir des lettres";
+        if (empty($signalement->getTitre()) || !preg_match('/[a-zA-ZÀ-ÿ]/u', $signalement->getTitre())) {
+            $errors[] = "Le titre est obligatoire et doit contenir des lettres.";
         }
 
-        if (empty($signalement->getDescription())) {
-            $errors[] = "La description est obligatoire";
-        } elseif (!preg_match('/[a-zA-ZÀ-ÿ]/u', $signalement->getDescription())) {
-            $errors[] = "La description doit contenir des lettres";
+        if (empty($signalement->getDescription()) || !preg_match('/[a-zA-ZÀ-ÿ]/u', $signalement->getDescription())) {
+            $errors[] = "La description est obligatoire et doit contenir des lettres.";
         }
 
         if (empty($signalement->getEmplacement())) {
-            $errors[] = "L'emplacement est obligatoire";
+            $errors[] = "L'emplacement est obligatoire.";
         }
+
         if (empty($signalement->getDateSignalement())) {
-            $errors[] = "La date est obligatoire";
+            $errors[] = "La date est obligatoire.";
         }
+
         if (empty($signalement->getStatut())) {
-            $errors[] = "Le statut est obligatoire";
+            $errors[] = "Le statut est obligatoire.";
         }
 
         if (!empty($errors)) {
@@ -166,19 +146,19 @@ class SignalementC {
             ");
 
             $success = $query->execute([
-                ':id_signalement' => $signalement->getIdSignalement(),
                 ':titre' => $signalement->getTitre(),
                 ':description' => $signalement->getDescription(),
                 ':emplacement' => $signalement->getEmplacement(),
                 ':date_signalement' => $signalement->getDateSignalement(),
-                ':statut' => $signalement->getStatut()
+                ':statut' => $signalement->getStatut(),
+                ':id_signalement' => $signalement->getIdSignalement()
             ]);
 
             if ($success) {
-                $this->showMessage('success', '✅ Signalement modifié !');
+                $this->showMessage('success', '✅ Signalement modifié avec succès !');
                 return true;
             }
-            
+
             $this->showMessage('danger', '❌ Erreur lors de la modification');
             return false;
 
@@ -198,6 +178,15 @@ class SignalementC {
             $this->showMessage('danger', '❌ Erreur: '.htmlspecialchars($e->getMessage()));
             return [];
         }
+    }
+
+    public function recupererSignalement($id_signalement) {
+        $db = config::getConnection();  // ajoute ça ici
+        $sql = "SELECT * FROM signalement WHERE id_signalement = :id_signalement";
+        $req = $db->prepare($sql);
+        $req->bindValue(':id_signalement', $id_signalement);
+        $req->execute();
+        return $req->fetch();
     }
 
     public function afficherSignalements() {

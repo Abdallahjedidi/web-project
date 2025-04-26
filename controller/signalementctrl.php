@@ -179,6 +179,14 @@ class SignalementC {
             return [];
         }
     }
+    public function getTodaySignalements()
+    {
+        $db = config::getConnection();
+        $query = $db->query("SELECT id_signalement, titre, description, emplacement, date_signalement, statut FROM signalement WHERE DATE(date_signalement) = CURDATE()");
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+
 
     public function recupererSignalement($id_signalement) {
         $db = config::getConnection();  // ajoute ça ici

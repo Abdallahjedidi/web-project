@@ -26,7 +26,6 @@ $signalements = $signalementCtrl->afficherSignalements();
 </head>
 <body style="background-color: #f4f4f4;">
   <div class="hero_area">
-    <!-- Header identique à signalement_ajout.php -->
     <header class="header_section">
       <div class="container-fluid">
         <nav class="navbar navbar-expand-lg custom_nav-container">
@@ -56,14 +55,13 @@ $signalements = $signalementCtrl->afficherSignalements();
       </div>
     </header>
 
-    <!-- Section contenant le tableau centré -->
     <section class="contact_section layout_padding" style="background-color: #ffffff; padding: 60px 0;">
       <div class="container">
         <div class="heading_container heading_center">
           <h2>Liste des signalements</h2>
         </div>
         <div class="table-responsive d-flex justify-content-center">
-          <table class="table table-bordered table-striped w-75">
+          <table class="table table-bordered table-striped" style="width: 100%;">
             <thead class="table-dark">
               <tr>
                 <th>ID</th>

@@ -6,11 +6,13 @@ include_once '../../Model/signalement.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $signalement = new Signalement();
 
-    $signalement->setTitre($_POST['titre']);
-    $signalement->setDescription($_POST['description']);
-    $signalement->setEmplacement($_POST['emplacement']);
-    $signalement->setDateSignalement($_POST['date_signalement']);
-    $signalement->setStatut($_POST['statut']);
+    $signalement->setTitre($_POST['titre'] ?? '');
+    $signalement->setDescription($_POST['description'] ?? '');
+    $signalement->setEmplacement($_POST['emplacement'] ?? '');
+    $signalement->setDateSignalement($_POST['date_signalement'] ?? '');
+    $signalement->setStatut($_POST['statut'] ?? ''); // ✅ Ajouté protection ici
+
+
 
     $signalementc = new SignalementC();
     $signalementc->addSignalement($signalement);
@@ -122,19 +124,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     </div>
                                     <form class="user mx-auto" action="addsignalement.php" method="POST" style="max-width: 400px;">
                                         <div class="form-group">
-                                            <input type="text" class="form-control form-control-user" name="titre" placeholder="Titre" required>
+                                            <input type="text" class="form-control form-control-user" name="titre" placeholder="Titre" >
                                         </div>
                                         <div class="form-group">
-                                            <textarea class="form-control form-control-user" name="description" placeholder="Description" required></textarea>
+                                            <textarea class="form-control form-control-user" name="description" placeholder="Description" ></textarea>
                                         </div>
                                         <div class="form-group">
-                                            <input type="text" class="form-control form-control-user" name="emplacement" placeholder="Emplacement" required>
+                                            <input type="text" class="form-control form-control-user" name="emplacement" placeholder="Emplacement" >
                                         </div>
                                         <div class="form-group">
-                                            <input type="date" class="form-control form-control-user" name="date_signalement" required>
+                                            <input type="date" class="form-control form-control-user" name="date_signalement" >
                                         </div>
                                         <div class="form-group">
-                                            <select class="form-control form-control-user" name="statut" required>
+                                            <select class="form-control form-control-user" name="statut" >
                                                 <option value="" disabled selected hidden>Choisir un statut...</option>
                                                 <option value="En attente">En attente</option>
                                                 <option value="Résolu">Résolu</option>

@@ -186,6 +186,14 @@ class SignalementC {
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
     
+    public function getAllSignalements()
+    {
+        $db = config::getConnection();
+        $query = $db->query("SELECT id_signalement, titre, description, emplacement, date_signalement, statut FROM signalement");
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    
 
 
     public function recupererSignalement($id_signalement) {

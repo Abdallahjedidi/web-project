@@ -5,6 +5,8 @@ include_once '../../config.php';
 
 $suivic = new SuiviC();
 
+$errors = [];
+
 // Récupérer le suivi
 if (isset($_GET['id_suivi'])) {
     $id_suivi = $_GET['id_suivi'];
@@ -19,30 +21,56 @@ if (isset($_GET['id_suivi'])) {
 
 // Modifier suivi si formulaire soumis
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $suivi = new Suivi();
-    $suivi->setIdSuivi($_POST['id_suivi']);
-    $suivi->setIdSignalement($_POST['id_signalement']);
-    $suivi->setDateSuivi($_POST['date_suivi']);
-    $suivi->setServiceResponsable($_POST['service_responsable']);
-    $suivi->setStatut($_POST['statut']);
-    $suivi->setDescription($_POST['description']);
 
-    $suivic->modifierSuivi($suivi);
+    if (empty($_POST['id_signalement'])) {
+        $errors['id_signalement'] = "Veuillez saisir l'ID du signalement.";
+    }
 
-    header("Location: affichesuivi.php");
-    exit();
+    if (empty($_POST['date_suivi'])) {
+        $errors['date_suivi'] = "Veuillez saisir la date du suivi.";
+    }
+
+    if (empty($_POST['service_responsable'])) {
+        $errors['service_responsable'] = "Veuillez choisir un service responsable.";
+    }
+
+    if (empty($_POST['statut'])) {
+        $errors['statut'] = "Veuillez choisir un statut.";
+    }
+
+    if (empty($_POST['description'])) {
+        $errors['description'] = "Veuillez saisir une description.";
+    } else {
+        $description = trim($_POST['description']);
+        if (strlen($description) < 10) {
+            $errors['description'] = "La description doit contenir au moins 10 caractères.";
+        } elseif (str_word_count($description) < 2) {
+            $errors['description'] = "La description doit contenir au moins deux mots.";
+        }
+    }
+
+    if (empty($errors)) {
+        $suivi = new Suivi();
+        $suivi->setIdSuivi($_POST['id_suivi']);
+        $suivi->setIdSignalement($_POST['id_signalement']);
+        $suivi->setDateSuivi($_POST['date_suivi']);
+        $suivi->setServiceResponsable($_POST['service_responsable']);
+        $suivi->setStatut($_POST['statut']);
+        $suivi->setDescription($_POST['description']);
+
+        $suivic->modifierSuivi($suivi);
+
+        header("Location: affichesuivi.php");
+        exit();
+    }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Modifier Suivi</title>
-
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
 </head>
@@ -71,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <hr class="sidebar-divider">
 
-        <!-- Menu Signalement -->
+        <!-- Signalements -->
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSignalement"
                aria-expanded="true" aria-controls="collapseSignalement">
@@ -80,15 +108,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </a>
             <div id="collapseSignalement" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Édition :</h6>
                     <a class="collapse-item" href="addsignalement.php">Ajouter Signalement</a>
                     <a class="collapse-item" href="affichesignalement.php">Afficher Signalements</a>
-                    <a class="collapse-item" href="rapport_signalement_suivi.php">Modifier Signalement</a>
                 </div>
             </div>
         </li>
 
-        <!-- Menu Suivi -->
+        <!-- Suivis -->
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSuivi"
                aria-expanded="true" aria-controls="collapseSuivi">
@@ -97,10 +123,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </a>
             <div id="collapseSuivi" class="collapse" aria-labelledby="headingSuivi" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Édition :</h6>
                     <a class="collapse-item" href="addsuivi.php">Ajouter Suivi</a>
                     <a class="collapse-item" href="affichesuivi.php">Afficher Suivis</a>
-                    <a class="collapse-item" href="modifiersuivi.php">Modifier Suivi</a>
                 </div>
             </div>
         </li>
@@ -125,7 +149,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </ul>
             </nav>
 
-            <!-- Content -->
             <div class="container-fluid">
 
                 <h1 class="text-center mb-4">Modifier un Suivi</h1>
@@ -136,43 +159,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <div class="col-lg-7">
                                 <div class="p-5">
 
-                                    <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Formulaire de Modification</h1>
-                                    </div>
-
                                     <form class="user" method="POST">
                                         <input type="hidden" name="id_suivi" value="<?php echo $suiviData['id_suivi']; ?>">
 
-                                        <div class="form-group">
-                                            <input type="text" class="form-control form-control-user" name="id_signalement" value="<?php echo $suiviData['id_signalement']; ?>" required placeholder="ID Signalement">
+                                        <div class="form-group position-relative">
+                                            <input type="text" class="form-control form-control-user <?php echo isset($errors['id_signalement']) ? 'is-invalid' : ''; ?>" name="id_signalement" placeholder="ID Signalement" value="<?php echo htmlspecialchars($_POST['id_signalement'] ?? $suiviData['id_signalement']); ?>">
+                                            <?php if (isset($errors['id_signalement'])): ?>
+                                                <div class="invalid-feedback" style="display:block;"><?php echo $errors['id_signalement']; ?></div>
+                                            <?php endif; ?>
                                         </div>
 
-                                        <div class="form-group">
-                                            <input type="date" class="form-control form-control-user" name="date_suivi" value="<?php echo $suiviData['date_suivi']; ?>" required>
+                                        <div class="form-group position-relative">
+                                            <input type="date" class="form-control form-control-user <?php echo isset($errors['date_suivi']) ? 'is-invalid' : ''; ?>" name="date_suivi" value="<?php echo htmlspecialchars($_POST['date_suivi'] ?? $suiviData['date_suivi']); ?>">
+                                            <?php if (isset($errors['date_suivi'])): ?>
+                                                <div class="invalid-feedback" style="display:block;"><?php echo $errors['date_suivi']; ?></div>
+                                            <?php endif; ?>
                                         </div>
 
-                                        <div class="form-group">
-                                            <select class="form-control form-control-user" name="service_responsable" required>
-                                                <option value="" disabled>Choisir un service...</option>
-                                                <option value="Municipalité" <?php if($suiviData['service_responsable']=='Municipalité') echo 'selected'; ?>>Municipalité</option>
-                                                <option value="Police" <?php if($suiviData['service_responsable']=='Police') echo 'selected'; ?>>Police</option>
-                                                <option value="STEG" <?php if($suiviData['service_responsable']=='STEG') echo 'selected'; ?>>STEG</option>
-                                                <option value="SONEDE" <?php if($suiviData['service_responsable']=='SONEDE') echo 'selected'; ?>>SONEDE</option>
-                                                <option value="Autre" <?php if($suiviData['service_responsable']=='Autre') echo 'selected'; ?>>Autre</option>
+                                        <div class="form-group position-relative">
+                                            <select class="form-control <?php echo isset($errors['service_responsable']) ? 'is-invalid' : ''; ?>" name="service_responsable">
+                                                <?php if (empty($_POST['service_responsable']) && empty($suiviData['service_responsable'])): ?>
+                                                    <option value="" disabled selected hidden>-- Choisir un service --</option>
+                                                <?php endif; ?>
+                                                <option value="Municipalité" <?php echo (($_POST['service_responsable'] ?? $suiviData['service_responsable']) == "Municipalité") ? 'selected' : ''; ?>>Municipalité</option>
+                                                <option value="Police" <?php echo (($_POST['service_responsable'] ?? $suiviData['service_responsable']) == "Police") ? 'selected' : ''; ?>>Police</option>
+                                                <option value="STEG" <?php echo (($_POST['service_responsable'] ?? $suiviData['service_responsable']) == "STEG") ? 'selected' : ''; ?>>STEG</option>
+                                                <option value="SONEDE" <?php echo (($_POST['service_responsable'] ?? $suiviData['service_responsable']) == "SONEDE") ? 'selected' : ''; ?>>SONEDE</option>
+                                                <option value="Autre" <?php echo (($_POST['service_responsable'] ?? $suiviData['service_responsable']) == "Autre") ? 'selected' : ''; ?>>Autre</option>
                                             </select>
+                                            <?php if (isset($errors['service_responsable'])): ?>
+                                                <div class="invalid-feedback" style="display:block;"><?php echo $errors['service_responsable']; ?></div>
+                                            <?php endif; ?>
                                         </div>
 
-                                        <div class="form-group">
-                                            <select class="form-control form-control-user" name="statut" required>
-                                                <option value="" disabled>Choisir un statut...</option>
-                                                <option value="En attente" <?php if($suiviData['statut']=='En attente') echo 'selected'; ?>>En attente</option>
-                                                <option value="En cours" <?php if($suiviData['statut']=='En cours') echo 'selected'; ?>>En cours</option>
-                                                <option value="Résolu" <?php if($suiviData['statut']=='Résolu') echo 'selected'; ?>>Résolu</option>
+                                        <div class="form-group position-relative">
+                                            <select class="form-control <?php echo isset($errors['statut']) ? 'is-invalid' : ''; ?>" name="statut">
+                                                <?php if (empty($_POST['statut']) && empty($suiviData['statut'])): ?>
+                                                    <option value="" disabled selected hidden>-- Choisir un statut --</option>
+                                                <?php endif; ?>
+                                                <option value="En attente" <?php echo (($_POST['statut'] ?? $suiviData['statut']) == "En attente") ? 'selected' : ''; ?>>En attente</option>
+                                                <option value="En cours" <?php echo (($_POST['statut'] ?? $suiviData['statut']) == "En cours") ? 'selected' : ''; ?>>En cours</option>
+                                                <option value="Résolu" <?php echo (($_POST['statut'] ?? $suiviData['statut']) == "Résolu") ? 'selected' : ''; ?>>Résolu</option>
                                             </select>
+                                            <?php if (isset($errors['statut'])): ?>
+                                                <div class="invalid-feedback" style="display:block;"><?php echo $errors['statut']; ?></div>
+                                            <?php endif; ?>
                                         </div>
 
-                                        <div class="form-group">
-                                            <textarea class="form-control form-control-user" name="description" placeholder="Description..." rows="3" required><?php echo htmlspecialchars($suiviData['description']); ?></textarea>
+                                        <div class="form-group position-relative">
+                                            <textarea class="form-control form-control-user <?php echo isset($errors['description']) ? 'is-invalid' : ''; ?>" name="description" placeholder="Description..." rows="3"><?php echo htmlspecialchars($_POST['description'] ?? $suiviData['description']); ?></textarea>
+                                            <?php if (isset($errors['description'])): ?>
+                                                <div class="invalid-feedback" style="display:block;"><?php echo $errors['description']; ?></div>
+                                            <?php endif; ?>
                                         </div>
 
                                         <button type="submit" class="btn btn-primary btn-user btn-block">
@@ -196,7 +234,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 </div>
 
-<!-- JS -->
 <script src="vendor/jquery/jquery.min.js"></script>
 <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="vendor/jquery-easing/jquery.easing.min.js"></script>

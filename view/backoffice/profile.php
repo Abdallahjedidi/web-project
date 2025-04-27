@@ -1,6 +1,12 @@
 <?php
 include_once '../../controller/usercontroller.php';
 
+
+
+
+
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
@@ -19,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 ?>
-
 
 
 
@@ -50,6 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <link href="css/profile.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
 
 </head>
 
@@ -349,12 +356,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   </div>
 </div>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 <!-- JS -->
 <script>
   document.getElementById('logout-btn').addEventListener('click', function () {
     localStorage.removeItem('user'); // ou localStorage.clear();
-    window.location.href = 'login.php';
+    window.location.href = '../frontoffice/login.php';
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -379,27 +387,49 @@ document.addEventListener("DOMContentLoaded", function () {
     const email = document.getElementById('update-email').value.trim();
 
     const nameRegex = /^[a-zA-ZÀ-ÿ\s\-]+$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!nameRegex.test(nom)) {
-        alert("Le nom ne doit contenir que des lettres, des espaces ou des tirets.");
-        return;
-    }
+let erreurs = [];
 
-    if (!nameRegex.test(prenom)) {
-        alert("Le prénom ne doit contenir que des lettres, des espaces ou des tirets.");
-        return;
-    }
+if (nom.trim() === "" || !nameRegex.test(nom)) {
+    erreurs.push("❌ Le nom est invalide.");
+}
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        alert("Veuillez entrer une adresse email valide.");
-        return;
-    }
+if (prenom.trim() === "" || !nameRegex.test(prenom)) {
+    erreurs.push("❌ Le prénom est invalide.");
+}
+
+if (email.trim() === "" || !emailRegex.test(email)) {
+    erreurs.push("❌ Email invalide.");
+}
+
+if (erreurs.length > 0) {
+    erreurs.forEach((erreur, index) => {
+        setTimeout(() => {
+            Toastify({
+                text: erreur,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#e74c3c",
+                stopOnFocus: true,
+                style: {
+                    fontSize: "14px",
+                    borderRadius: "8px"
+                }
+            }).showToast();
+        }, index * 300); // décalage pour chaque toast
+    });
+    return;
+}
+
 
     const updatedUser = {
         id: user.id,
         nom,
         prenom,
-        email
+        email,
+        role: user.role
     };
 
     fetch('profile.php', {
@@ -417,6 +447,9 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('user-prenom').textContent = updatedUser.prenom;
             document.getElementById('user-email').textContent = updatedUser.email;
             $('#editModal').modal('hide');
+            setTimeout(() => {
+        location.reload();
+    }, 500); // 500 ms
         } else {
             alert("Erreur lors de la mise à jour : " + data.message);
         }
@@ -527,7 +560,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
     <!-- Page level plugins -->
     <script src="vendor/chart.js/Chart.min.js"></script>
+<script> 
 
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Vérifier si le token est présent dans localStorage
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    if (!user) {
+        // Si l'utilisateur n'est pas connecté, redirige vers la page de login
+        window.location.href = '../frontoffice/login.php';
+        return;
+    }
+
+    // Vérifier si l'utilisateur a un rôle admin
+    if (user.role !== 'admin') {
+        // Si l'utilisateur n'est pas admin, redirige vers la page non autorisée
+        window.location.href = 'unauthorized.php'; // Remplace par l'URL de ta page non autorisée
+        return;
+    }
+});
+
+
+</script>
     <!-- Page level custom scripts -->
     <script src="js/demo/chart-area-demo.js"></script>
     <script src="js/demo/chart-pie-demo.js"></script>

@@ -336,8 +336,8 @@ $users = $controller->getAllRegularUsers();
                             <div class="modal fade" id="editModal<?= $user['id'] ?>" tabindex="-1" role="dialog" aria-labelledby="editModalLabel<?= $user['id'] ?>" aria-hidden="true">
                               <div class="modal-dialog" role="document">
                                 <div class="modal-content">
-                                  <form method="POST">
-                                      <div class="modal-header">
+                                <form method="POST" id="edit-form-<?= $user['id'] ?>">
+                                <div class="modal-header">
                                         <h5 class="modal-title" id="editModalLabel<?= $user['id'] ?>">Modifier Utilisateur</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                           <span aria-hidden="true">&times;</span>
@@ -347,16 +347,16 @@ $users = $controller->getAllRegularUsers();
                                           <input type="hidden" name="id" value="<?= $user['id'] ?>">
                                           <div class="form-group">
                                               <label>Nom</label>
-                                              <input type="text" class="form-control" name="nom" value="<?= htmlspecialchars($user['nom']) ?>" >
-                                          </div>
+                                              <input type="text" class="form-control" name="nom" id="nom-<?= $user['id'] ?>" value="<?= htmlspecialchars($user['nom']) ?>">
+                                              </div>
                                           <div class="form-group">
                                               <label>Prénom</label>
-                                              <input type="text" class="form-control" name="prenom" value="<?= htmlspecialchars($user['prenom']) ?>">
-                                          </div>
+                                              <input type="text" class="form-control" name="prenom" id="prenom-<?= $user['id'] ?>" value="<?= htmlspecialchars($user['prenom']) ?>">
+                                              </div>
                                           <div class="form-group">
                                               <label>Email</label>
-                                              <input type="email" class="form-control" name="email" value="<?= htmlspecialchars($user['email']) ?>" >
-                                          </div>
+                                              <input  class="form-control" name="email" id="email-<?= $user['id'] ?>" value="<?= htmlspecialchars($user['email']) ?>">
+                                              </div>
                                       </div>
                                       <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
@@ -436,6 +436,63 @@ $users = $controller->getAllRegularUsers();
     <!-- Page level custom scripts -->
     <script src="js/demo/chart-area-demo.js"></script>
     <script src="js/demo/chart-pie-demo.js"></script>
+    <script> 
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Vérifier si le token est présent dans localStorage
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    if (!user) {
+        // Si l'utilisateur n'est pas connecté, redirige vers la page de login
+        window.location.href = '../frontoffice/login.php';
+        return;
+    }
+
+    // Vérifier si l'utilisateur a un rôle admin
+    if (user.role !== 'admin') {
+        // Si l'utilisateur n'est pas admin, redirige vers la page non autorisée
+        window.location.href = 'unauthorized.php'; // Remplace par l'URL de ta page non autorisée
+        return;
+    }
+});
+
+
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("edit-form-<?= $user['id'] ?>");
+
+    form.addEventListener("submit", function (e) {
+        const nom = document.getElementById("nom-<?= $user['id'] ?>").value.trim();
+        const prenom = document.getElementById("prenom-<?= $user['id'] ?>").value.trim();
+        const email = document.getElementById("email-<?= $user['id'] ?>").value.trim();
+
+        const nameRegex = /^[a-zA-ZÀ-ÿ\s\-]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        let erreurs = [];
+
+        if (nom === "" || !nameRegex.test(nom)) {
+            erreurs.push("❌ Le nom est invalide (lettres, espaces ou tirets uniquement).");
+        }
+
+        if (prenom === "" || !nameRegex.test(prenom)) {
+            erreurs.push("❌ Le prénom est invalide (lettres, espaces ou tirets uniquement).");
+        }
+
+        if (email === "" || !emailRegex.test(email)) {
+            erreurs.push("❌ L'email est invalide.");
+        }
+
+        if (erreurs.length > 0) {
+            e.preventDefault();
+            alert(erreurs.join("\n"));
+        }
+    });
+});
+</script>
+
 
 </body>
 

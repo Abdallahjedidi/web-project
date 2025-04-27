@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Profil Utilisateur</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
     <!-- CSS Bootstrap & MaterialDesign -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
@@ -82,8 +83,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 </div>
 
+
+
+
+
 <!-- JS -->
 <script>
+
+
+
+
   document.getElementById('logout-btn').addEventListener('click', function () {
     localStorage.removeItem('user'); // ou localStorage.clear();
     window.location.href = 'login.php';
@@ -110,22 +119,43 @@ document.addEventListener("DOMContentLoaded", function () {
     const prenom = document.getElementById('update-prenom').value.trim();
     const email = document.getElementById('update-email').value.trim();
 
-    const nameRegex = /^[a-zA-ZÀ-ÿ\s\-]+$/;
+   const nameRegex = /^[a-zA-ZÀ-ÿ\s\-]+$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!nameRegex.test(nom)) {
-        alert("Le nom ne doit contenir que des lettres, des espaces ou des tirets.");
-        return;
-    }
+let erreurs = [];
 
-    if (!nameRegex.test(prenom)) {
-        alert("Le prénom ne doit contenir que des lettres, des espaces ou des tirets.");
-        return;
-    }
+if (nom.trim() === "" || !nameRegex.test(nom)) {
+    erreurs.push("❌ Le nom est invalide.");
+}
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        alert("Veuillez entrer une adresse email valide.");
-        return;
-    }
+if (prenom.trim() === "" || !nameRegex.test(prenom)) {
+    erreurs.push("❌ Le prénom est invalide.");
+}
+
+if (email.trim() === "" || !emailRegex.test(email)) {
+    erreurs.push("❌ Email invalide.");
+}
+
+if (erreurs.length > 0) {
+    erreurs.forEach((erreur, index) => {
+        setTimeout(() => {
+            Toastify({
+                text: erreur,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#e74c3c",
+                stopOnFocus: true,
+                style: {
+                    fontSize: "14px",
+                    borderRadius: "8px"
+                }
+            }).showToast();
+        }, index * 300); // décalage pour chaque toast
+    });
+    return;
+}
+
 
     const updatedUser = {
         id: user.id,
@@ -197,6 +227,32 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
   </div>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Vérifier si le token est présent dans localStorage
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    if (!user) {
+        window.location.href = '../frontoffice/login.php';
+        return;
+    }
+
+    if (user.role === 'admin') {
+        window.location.href = 'unauthorized1.php'; // Remplace par l'URL de ta page non autorisée
+        return;
+    } 
+});
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Popper.js (nécessaire pour Bootstrap 4) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
 </body>
 </html>

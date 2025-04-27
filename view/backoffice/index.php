@@ -1,19 +1,4 @@
-<?php
-session_start();
 
-// Rediriger si l'utilisateur n'est pas connecté
-if (!isset($_SESSION['user'])) {
-    header("Location: ../frontoffice/login.php");
-    exit();
-}
-
-// Rediriger si l'utilisateur n'est pas admin
-$user = $_SESSION['user'];
-if ($user['role'] !== 'admin') {
-    header("Location: unauthorized.php"); // Crée une page unauthorized si tu veux
-    exit();
-}
-?>
 
 
 
@@ -367,6 +352,29 @@ if ($user['role'] !== 'admin') {
     <!-- Page level custom scripts -->
     <script src="js/demo/chart-area-demo.js"></script>
     <script src="js/demo/chart-pie-demo.js"></script>
+    <script> 
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Vérifier si le token est présent dans localStorage
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    if (!user) {
+        // Si l'utilisateur n'est pas connecté, redirige vers la page de login
+        window.location.href = '../frontoffice/login.php';
+        return;
+    }
+
+    // Vérifier si l'utilisateur a un rôle admin
+    if (user.role !== 'admin') {
+        // Si l'utilisateur n'est pas admin, redirige vers la page non autorisée
+        window.location.href = 'unauthorized.php'; // Remplace par l'URL de ta page non autorisée
+        return;
+    }
+});
+
+
+</script>
 
 </body>
 

@@ -63,8 +63,8 @@ background-size: cover;}
                         <div class="error mx-auto" data-text="403">403</div>
                         <p class="lead text-gray-800 mb-5">Access Forbidden</p>
                         <p class="text-gray-500 mb-0">You do not have permission to access this page.</p>
-                        <a href="../frontoffice/home.html" class="btn btn-primary mt-4">
-                            <i class="fas fa-arrow-left"></i> Back to accueill
+                        <a href="../backoffice/index.php" class="btn btn-primary mt-4">
+                            <i class="fas fa-arrow-left"></i> Back to Dashboard
                         </a>
                     </div>
 

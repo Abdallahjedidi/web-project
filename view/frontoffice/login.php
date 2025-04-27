@@ -90,6 +90,8 @@ if (isset($_POST['login'])) {
             </div>
 
             <button type="submit" name="login">Se connecter</button>
+            <a href="forgot_password.php">Mot de passe oublié ?</a>
+
         </form>
 
         <?php if (!empty($error_message)): ?>

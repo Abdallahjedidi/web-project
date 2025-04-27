@@ -52,19 +52,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $suivic = new SuiviC();
         $suivic->ajouterSuivi($suivi);
-        header("Location: affichesuivi.php");
+        header("Location: affichesuivi.php?success=1");
         exit();
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="utf-8">
     <title>Ajouter un Suivi</title>
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
 </head>
 
@@ -80,27 +78,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
         </a>
-
         <hr class="sidebar-divider my-0">
 
-        <li class="nav-item">
+        <li class="nav-item active">
             <a class="nav-link" href="index.php">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>Dashboard</span>
-            </a>
+                <span>Dashboard</span></a>
         </li>
 
         <hr class="sidebar-divider">
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSignalement"
-               aria-expanded="true" aria-controls="collapseSignalement">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSignalement" aria-expanded="true" aria-controls="collapseSignalement">
                 <i class="fas fa-fw fa-cog"></i>
                 <span>Signalements</span>
             </a>
-            <div id="collapseSignalement" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseSignalement" class="collapse">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Édition :</h6>
                     <a class="collapse-item" href="addsignalement.php">Ajouter Signalement</a>
                     <a class="collapse-item" href="affichesignalement.php">Afficher Signalements</a>
                     <a class="collapse-item" href="modifiersignalement.php">Modifier Signalement</a>
@@ -109,14 +103,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </li>
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSuivi"
-               aria-expanded="true" aria-controls="collapseSuivi">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseSuivi" aria-expanded="true" aria-controls="collapseSuivi">
                 <i class="fas fa-fw fa-wrench"></i>
                 <span>Suivis</span>
             </a>
-            <div id="collapseSuivi" class="collapse" aria-labelledby="headingSuivi" data-parent="#accordionSidebar">
+            <div id="collapseSuivi" class="collapse">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Édition :</h6>
                     <a class="collapse-item" href="addsuivi.php">Ajouter Suivi</a>
                     <a class="collapse-item" href="affichesuivi.php">Afficher Suivis</a>
                     <a class="collapse-item" href="rapport_signalement_suivi.php">Rapport Suivi</a>
@@ -124,9 +116,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </li>
 
+        <hr class="sidebar-divider d-none d-md-block">
     </ul>
-    <!-- End of Sidebar -->
+    <!-- End Sidebar -->
 
+    <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
 
@@ -135,6 +129,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                     <i class="fa fa-bars"></i>
                 </button>
+
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#">
@@ -154,71 +149,90 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="row justify-content-center">
                             <div class="col-lg-7">
                                 <div class="p-5">
-                                    <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">Formulaire de Suivi</h1>
-                                    </div>
-                                    <form class="user mx-auto" action="addsuivi.php" method="POST" style="max-width: 400px;">
-                                        <div class="form-group position-relative">
+                                    <form class="user" method="POST">
+
+                                        <div class="form-group">
                                             <input type="text" class="form-control form-control-user <?php echo isset($errors['id_signalement']) ? 'is-invalid' : ''; ?>" name="id_signalement" id="id_signalement" placeholder="ID Signalement" value="<?php echo isset($_POST['id_signalement']) ? htmlspecialchars($_POST['id_signalement']) : ''; ?>">
-                                            <?php if (isset($errors['id_signalement'])): ?>
-                                                <div class="invalid-feedback" style="display:block;"><?php echo $errors['id_signalement']; ?></div>
-                                            <?php endif; ?>
+                                            <?php if (isset($errors['id_signalement'])): ?><div class="invalid-feedback" style="display:block;"><?php echo $errors['id_signalement']; ?></div><?php endif; ?>
                                         </div>
 
-                                        <div class="form-group position-relative">
+                                        <div class="form-group">
                                             <input type="date" class="form-control form-control-user <?php echo isset($errors['date_suivi']) ? 'is-invalid' : ''; ?>" name="date_suivi" value="<?php echo isset($_POST['date_suivi']) ? htmlspecialchars($_POST['date_suivi']) : ''; ?>">
-                                            <?php if (isset($errors['date_suivi'])): ?>
-                                                <div class="invalid-feedback" style="display:block;"><?php echo $errors['date_suivi']; ?></div>
-                                            <?php endif; ?>
+                                            <?php if (isset($errors['date_suivi'])): ?><div class="invalid-feedback" style="display:block;"><?php echo $errors['date_suivi']; ?></div><?php endif; ?>
                                         </div>
 
-                                        <div class="form-group position-relative">
-                                        <select class="form-control <?php echo isset($errors['service_responsable']) ? 'is-invalid' : ''; ?>" name="service_responsable">
-    <?php if (empty($_POST['service_responsable'])): ?>
-        <option value="" disabled selected hidden>-- Choisir un service --</option>
-    <?php endif; ?>
-    <option value="Municipalité" <?php echo (isset($_POST['service_responsable']) && $_POST['service_responsable'] == "Municipalité") ? 'selected' : ''; ?>>Municipalité</option>
-    <option value="Police" <?php echo (isset($_POST['service_responsable']) && $_POST['service_responsable'] == "Police") ? 'selected' : ''; ?>>Police</option>
-    <option value="STEG" <?php echo (isset($_POST['service_responsable']) && $_POST['service_responsable'] == "STEG") ? 'selected' : ''; ?>>STEG</option>
-    <option value="SONEDE" <?php echo (isset($_POST['service_responsable']) && $_POST['service_responsable'] == "SONEDE") ? 'selected' : ''; ?>>SONEDE</option>
-    <option value="Autre" <?php echo (isset($_POST['service_responsable']) && $_POST['service_responsable'] == "Autre") ? 'selected' : ''; ?>>Autre</option>
-</select>
-
-                                            <?php if (isset($errors['service_responsable'])): ?>
-                                                <div class="invalid-feedback" style="display:block;"><?php echo $errors['service_responsable']; ?></div>
-                                            <?php endif; ?>
+                                        <div class="form-group">
+                                            <select class="form-control <?php echo isset($errors['service_responsable']) ? 'is-invalid' : ''; ?>" name="service_responsable">
+                                                <option value="" disabled selected hidden>-- Choisir un service --</option>
+                                                <option value="Municipalité" <?php if(isset($_POST['service_responsable']) && $_POST['service_responsable']=="Municipalité") echo "selected"; ?>>Municipalité</option>
+                                                <option value="Police" <?php if(isset($_POST['service_responsable']) && $_POST['service_responsable']=="Police") echo "selected"; ?>>Police</option>
+                                                <option value="STEG" <?php if(isset($_POST['service_responsable']) && $_POST['service_responsable']=="STEG") echo "selected"; ?>>STEG</option>
+                                                <option value="SONEDE" <?php if(isset($_POST['service_responsable']) && $_POST['service_responsable']=="SONEDE") echo "selected"; ?>>SONEDE</option>
+                                                <option value="Autre" <?php if(isset($_POST['service_responsable']) && $_POST['service_responsable']=="Autre") echo "selected"; ?>>Autre</option>
+                                            </select>
+                                            <?php if (isset($errors['service_responsable'])): ?><div class="invalid-feedback" style="display:block;"><?php echo $errors['service_responsable']; ?></div><?php endif; ?>
                                         </div>
 
-                                        <div class="form-group position-relative">
-                                        <select class="form-control <?php echo isset($errors['statut']) ? 'is-invalid' : ''; ?>" name="statut">
-                                            <?php if (empty($_POST['statut'])): ?>
-                                <option value="" disabled selected hidden>-- Choisir un statut --</option>
-                                  <?php endif; ?>
-                                  <option value="En attente" <?php echo (isset($_POST['statut']) && $_POST['statut'] == "En attente") ? 'selected' : ''; ?>>En attente</option>
-                                  <option value="En cours" <?php echo (isset($_POST['statut']) && $_POST['statut'] == "En cours") ? 'selected' : ''; ?>>En cours</option>
-                               <option value="Résolu" <?php echo (isset($_POST['statut']) && $_POST['statut'] == "Résolu") ? 'selected' : ''; ?>>Résolu</option>
-                               </select>
-
-                                            <?php if (isset($errors['statut'])): ?>
-                                                <div class="invalid-feedback" style="display:block;"><?php echo $errors['statut']; ?></div>
-                                            <?php endif; ?>
+                                        <div class="form-group">
+                                            <select class="form-control <?php echo isset($errors['statut']) ? 'is-invalid' : ''; ?>" name="statut">
+                                                <option value="" disabled selected hidden>-- Choisir un statut --</option>
+                                                <option value="En attente" <?php if(isset($_POST['statut']) && $_POST['statut']=="En attente") echo "selected"; ?>>En attente</option>
+                                                <option value="En cours" <?php if(isset($_POST['statut']) && $_POST['statut']=="En cours") echo "selected"; ?>>En cours</option>
+                                                <option value="Résolu" <?php if(isset($_POST['statut']) && $_POST['statut']=="Résolu") echo "selected"; ?>>Résolu</option>
+                                            </select>
+                                            <?php if (isset($errors['statut'])): ?><div class="invalid-feedback" style="display:block;"><?php echo $errors['statut']; ?></div><?php endif; ?>
                                         </div>
 
-                                        <div class="form-group position-relative">
+                                        <div class="form-group">
                                             <textarea class="form-control form-control-user <?php echo isset($errors['description']) ? 'is-invalid' : ''; ?>" name="description" placeholder="Description..." rows="3"><?php echo isset($_POST['description']) ? htmlspecialchars($_POST['description']) : ''; ?></textarea>
-                                            <?php if (isset($errors['description'])): ?>
-                                                <div class="invalid-feedback" style="display:block;"><?php echo $errors['description']; ?></div>
-                                            <?php endif; ?>
+                                            <?php if (isset($errors['description'])): ?><div class="invalid-feedback" style="display:block;"><?php echo $errors['description']; ?></div><?php endif; ?>
                                         </div>
 
                                         <button type="submit" class="btn btn-primary btn-user btn-block">
                                             Ajouter Suivi
                                         </button>
+
                                     </form>
-                                    <hr>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Tableau des Signalements -->
+                <div class="container-fluid mt-5">
+                    <h2 class="text-center">Liste des Signalements</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Description</th>
+                                    <th>Emplacement</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($listeSignalements as $signalement): ?>
+                                    <tr>
+                                        <td><?= $signalement['id_signalement'] ?></td>
+                                        <td><?= htmlspecialchars($signalement['titre']) ?></td>
+                                        <td><?= htmlspecialchars($signalement['description']) ?></td>
+                                        <td><?= htmlspecialchars($signalement['emplacement']) ?></td>
+                                        <td><?= htmlspecialchars($signalement['date_signalement']) ?></td>
+                                        <td><?= htmlspecialchars($signalement['statut']) ?></td>
+                                        <td>
+                                            <button class="btn btn-success btn-sm" onclick="remplirIdSignalement('<?= $signalement['id_signalement'] ?>')">
+                                                Ajouter Suivi
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -226,6 +240,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         </div>
 
+        <!-- Footer -->
         <footer class="sticky-footer bg-white">
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
@@ -235,7 +250,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </footer>
 
     </div>
-
 </div>
 
 <script src="vendor/jquery/jquery.min.js"></script>

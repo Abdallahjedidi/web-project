@@ -51,44 +51,31 @@ $liste = $eventcontroller->afficherevent();
   </div>
 
   <!-- Main Content Section -->
-  <div class="container">
-    <h1 class="text-center my-5">event des Citoyens</h1>  
-
-    <div class="card shadow mb-4">
-      <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Liste des evenement</h6>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-            <thead>
-              <tr>            
-                <th>ID</th>            
-                <th>title</th>               
-                <th>Description</th>
-                <th>Date</th>
-                <th>location</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php foreach ($liste as $event): ?>
-                <tr>
-                  <td><?= htmlspecialchars($event['id']) ?></td>
-                  <td><?= htmlspecialchars($event['title']) ?></td>
-                  <td><?= htmlspecialchars($event['description']) ?></td>
-                  <td><?= htmlspecialchars($event['date']) ?></td>
-                  <td><?= htmlspecialchars($event['location']) ?></td>
-                  <td>
-                    <a href="modifierevent.php?id=<?= htmlspecialchars($event['id']) ?>" class="btn btn-warning btn-sm">Modifier</a>
-                  </td>
-                </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Event Cards -->
+                      <div class="row">
+                        <?php foreach ($liste as $event): ?>
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100">
+                                    <?php if (!empty($event['image'])): ?>
+                                        <img src="<?= htmlspecialchars($event['image']) ?>" class="card-img-top" alt="Event Image">
+                                    <?php else: ?>
+                                        <img src="images/default-event.jpg" class="card-img-top" alt="Default Event Image">
+                                    <?php endif; ?>
+                                    <div class="card-body">
+                                        <h5 class="card-title"><?= htmlspecialchars($event['title']) ?></h5>
+                                        <p class="card-text"><?= htmlspecialchars(substr($event['description'], 0, 100)) ?>...</p>
+                                        <p class="card-text"><small class="text-muted"><?= htmlspecialchars($event['date']) ?></small></p>
+                                        <!-- Latitude and Longitude -->
+                                        <p class="card-text">
+                                        <strong>Latitude:</strong> <?= htmlspecialchars($event['latitude']) ?><br>
+                                        <strong>Longitude:</strong> <?= htmlspecialchars($event['longitude']) ?>
+                                        </p>
+                                        <a href="eventdetails.php?id=<?= $event['id'] ?>" class="btn btn-primary">See Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
 
   <!-- Optional Footer -->
   <footer class="footer_section">

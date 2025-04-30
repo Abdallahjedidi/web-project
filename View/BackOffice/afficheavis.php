@@ -18,7 +18,7 @@ if (isset($_POST['id'])) {
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Dashboard</title>
+    <title>URBANISME - Dashboard</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -41,7 +41,7 @@ if (isset($_POST['id'])) {
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+                <div class="sidebar-brand-text mx-3">URBANISME </div>
             </a>
 
             <!-- Divider -->
@@ -69,6 +69,20 @@ if (isset($_POST['id'])) {
                        
                     </div>
                 </div>
+                
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="charts.php">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>charts</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsethree"
+                    aria-expanded="true" aria-controls="collapsethree">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>events</span>
+                </a>
                 <div id="collapsethree" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="addevent.php">add events</a>
@@ -76,7 +90,6 @@ if (isset($_POST['id'])) {
                      </div>
                 </div>
             </li>
-
         </ul>
         <!-- End of Sidebar -->
 
@@ -164,7 +177,7 @@ if (isset($_POST['id'])) {
                                         <?php foreach ($liste as $avis): ?>
                                             <tr>
                                                 <td><?= htmlspecialchars($avis['id']) ?></td>  <!-- Changed from vehicule to avis -->
-                                                <td><?= htmlspecialchars($avis['event_id']) ?></td>
+                                                <td><?= htmlspecialchars($avis['id_event']) ?></td>
                                                 <td><?= htmlspecialchars($avis['name']) ?></td>
                                                 <td><?= htmlspecialchars($avis['description']) ?></td>
                                                 <td><?= htmlspecialchars($avis['reported_at']) ?></td>

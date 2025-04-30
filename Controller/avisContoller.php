@@ -9,7 +9,7 @@ class AvisController {
     
         try {
             $query = $db->prepare(
-                "INSERT INTO avis (id, event_id, name, description, reported_at) 
+                "INSERT INTO avis (id, id_event, name, description, reported_at) 
                  VALUES (:id, :event_id, :name, :description, :reported_at)"
             );
     
@@ -58,7 +58,7 @@ class AvisController {
         try {
             $query = $db->prepare("
                 UPDATE avis SET
-                    event_id = :event_id,
+                    id_event = :event_id,
                     name = :name,
                     description = :description,
                     reported_at = :reported_at

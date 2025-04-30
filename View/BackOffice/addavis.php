@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Dashboard</title>
+    <title>URBANISME - Dashboard</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -111,6 +111,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                        
                     </div>
                 </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="charts.php">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>charts</span>
+                </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsethree"
@@ -451,6 +457,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Page level custom scripts -->
     <script src="js/demo/chart-area-demo.js"></script>
     <script src="js/demo/chart-pie-demo.js"></script>
+
 
 </body>
 

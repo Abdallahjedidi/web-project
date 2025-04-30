@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $event->setorganizer_id($organizer_id);
 
         $eventController = new eventcontroller();
-        $eventController->addevent($event);
+        $eventController->addevent($event,$image);
 
         echo "<div class='alert alert-success m-3'>Événement ajouté avec succès.</div>";
     } else {
@@ -76,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Dashboard</title>
+    <title>URBANISME - Dashboard</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -101,7 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="sidebar-brand-icon rotate-n-15">
         <i class="fas fa-laugh-wink"></i>
     </div>
-    <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+    <div class="sidebar-brand-text mx-3">URBANISME </div>
 </a>
 
 <!-- Divider -->
@@ -131,6 +131,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 </li>
+<li class="nav-item">
+                <a class="nav-link" href="charts.php">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>charts</span>
+                </a>
+            </li>
 <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsethree"
         aria-expanded="true" aria-controls="collapsethree">
@@ -366,11 +372,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
 
-                    <!-- Page Heading -->
-                    
-    <h1 class="text-center">Ajouter un event</h1>
-    
-    <div class="card o-hidden border-0 shadow-lg my-5">
+                  <!-- Page Heading -->
+<h1 class="text-center">Ajouter un event</h1>
+
+<div class="card o-hidden border-0 shadow-lg my-5">
     <div class="card-body p-0">
         <!-- Nested Row within Card Body -->
         <div class="row justify-content-center">
@@ -379,28 +384,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="text-center">
                         <h1 class="h4 text-gray-900 mb-4">Add Event</h1>
                     </div>
-                    <form class="user mx-auto" action="addevent.php" method="POST" style="max-width: 400px;">
+                    <!-- Add enctype="multipart/form-data" to allow image uploads -->
+                    <form class="user mx-auto" action="addevent.php" method="POST" style="max-width: 400px;" enctype="multipart/form-data">
                         
                         <div class="form-group">
                             <input type="text" class="form-control form-control-user" id="title"
-                                name="title" placeholder="title" >
+                                name="title" placeholder="title" required>
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control form-control-user" id="description"
-                                name="description" placeholder="description" >
+                                name="description" placeholder="description" required>
                         </div>
                         <div class="form-group">
                             <input type="date" class="form-control form-control-user" id="date"
-                                name="date" placeholder="date" >
+                                name="date" placeholder="date" required>
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control form-control-user" id="location"
-                                name="location" placeholder="location" >
+                                name="location" placeholder="location" required>
                         </div>
                         <div class="form-group">
                             <input type="number" class="form-control form-control-user" id="organizer_id"
-                                name="organizer_id" placeholder="organizer_id">
+                                name="organizer_id" placeholder="organizer_id" required>
                         </div>
+
+                        <!-- Add file input for the image -->
+                        <div class="form-group">
+                            <input type="file" class="form-control form-control-user" id="image"
+                                name="image" accept="image/*">
+                        </div>
+
                         <button type="submit" class="btn btn-primary btn-user btn-block">
                             Ajouter event
                         </button>
@@ -412,6 +425,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     </div>
+</div>
+
 </div>
 
     

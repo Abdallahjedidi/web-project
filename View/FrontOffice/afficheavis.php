@@ -62,7 +62,7 @@ $liste = $avisController->afficherAvis();
           <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
             <thead>
               <tr>
-                <th>ID</th>
+                
                 <th>Événement</th>
                 <th>Avis</th>
                 <th>Description</th>
@@ -73,8 +73,8 @@ $liste = $avisController->afficherAvis();
             <tbody>
               <?php foreach ($liste as $avis): ?>
                 <tr>
-                  <td><?= htmlspecialchars($avis['id']) ?></td>
-                  <td><?= htmlspecialchars($avis['event_id']) ?></td>
+                  
+                 
                   <td><?= htmlspecialchars($avis['name']) ?></td>
                   <td><?= htmlspecialchars($avis['description']) ?></td>
                   <td><?= htmlspecialchars($avis['reported_at']) ?></td>

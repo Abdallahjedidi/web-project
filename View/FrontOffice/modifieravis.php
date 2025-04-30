@@ -1,40 +1,49 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 include_once '../../config.php';
 include_once '../../Controller/avisContoller.php';
 include_once '../../Model/Avis.php';
 
 $avisController = new AvisController();
+$avis = null;
+$message = "";
+$errors = [];
 
+// Récupération des données de l'avis à modifier
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
     $avis = $avisController->getAvisById($id);
+
+    if (!$avis) {
+        die("Avis introuvable !");
+    }
 }
 
+// Traitement de la soumission du formulaire
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id = $_POST['id'];
-    $event_id = $_POST['event_id'];
-    $name = $_POST['name'];
-    $description = $_POST['description'];
-    $reported_at = $_POST['reported_at'];
+    $id = $_POST['id']; // Assure that ID is taken from POST
+    $event_id = $_POST['event_id'] ?? null;
+    $name = trim($_POST['name']);
+    $description = trim($_POST['description']);
+    $reported_at = date('Y-m-d H:i:s');
 
-    $errors = [];
-
-    if (empty($event_id) || !is_numeric($event_id)) {
-        $errors[] = "ID événement invalide.";
-    }
-
-    if (empty($name) || !preg_match("/^[a-zA-Z\s]+$/", $name)) {
+    // Validation
+    if (empty($name) || !preg_match("/^[a-zA-ZÀ-ÿ\s]+$/u", $name)) {
         $errors[] = "Nom invalide (lettres et espaces uniquement).";
     }
 
-    if (empty($description)) {
+    if (empty($description)|| strlen($description) < 3) {
         $errors[] = "Description ne peut pas être vide.";
     }
 
-    if (empty($reported_at) || strtotime($reported_at) === false) {
-        $errors[] = "Date invalide.";
+    if (empty($event_id) || !is_numeric($event_id)) {
+        $errors[] = "Événement invalide.";
     }
 
+    // Mise à jour si pas d'erreurs
     if (empty($errors)) {
         $avisObj = new Avis();
         $avisObj->setId($id);
@@ -42,22 +51,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $avisObj->setName($name);
         $avisObj->setDescription($description);
         $avisObj->setReportedAt($reported_at);
+
         $avisController->updateAvis($avisObj);
         echo "<script>alert('Avis modifié avec succès !'); window.location.href='afficheavis.php';</script>";
-    } else {
-        foreach ($errors as $error) {
-            echo "<script>alert('$error');</script>";
-        }
+        exit;
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Modifier Avis - Urbanisme</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/bootstrap.css" />
@@ -67,7 +74,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
 </head>
 <body>
+<style>
+    /* Change the color of the page heading */
+.heading_container h2 {
+    color: #007bff; /* Blue text for the heading */
+}
 
+/* Change the color of the labels */
+.form-group label {
+    color: #555; /* Dark grey color for labels */
+}
+
+/* Change the color of the input field text */
+.form-control {
+    color: #333; /* Dark grey text for inputs */
+}
+
+/* Change the color of error messages */
+.text-danger {
+    color: #dc3545; /* Red color for error messages */
+}
+
+/* Change the color of success messages */
+.alert-success {
+    color: #fff; /* White text for success message */
+}
+
+/* Change the color of the submit button text */
+.btn-primary {
+    color: #fff; /* White text for the submit button */
+}
+
+/* Change the color of the navbar links */
+.navbar-nav .nav-item .nav-link {
+    color: #fff !important; /* White text for navbar links */
+}
+  </style>
 <div class="hero_area">
   <!-- Header -->
   <header class="header_section">
@@ -81,7 +123,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <ul class="navbar-nav ml-auto">
             <li class="nav-item"><a class="nav-link" href="index.php">Accueil</a></li>
             <li class="nav-item"><a class="nav-link" href="afficheevent.php">Événements</a></li>
-            <li class="nav-item active"><a class="nav-link" href="afficheavis.php">avis</a></li>
+            <li class="nav-item active"><a class="nav-link" href="afficheavis.php">Avis</a></li>
             <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
           </ul>
         </div>
@@ -95,37 +137,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <div class="heading_container">
         <h2 class="text-center">Modifier un Avis</h2>
       </div>
-      <div class="row justify-content-center">
-        <div class="col-md-8">
-          <form method="POST">
-            <input type="hidden" name="id" value="<?= htmlspecialchars($avis['id']) ?>">
 
-            <div class="form-group">
-              <label for="event_id">ID Événement</label>
-              <input type="text" class="form-control" name="event_id" id="event_id" value="<?= htmlspecialchars($avis['event_id']) ?>" >
-            </div>
-
-            <div class="form-group">
-              <label for="name">Nom</label>
-              <input type="text" class="form-control" name="name" id="name" value="<?= htmlspecialchars($avis['name']) ?>" >
-            </div>
-
-            <div class="form-group">
-  <label for="description">Description</label>
-  <textarea class="form-control" name="description" id="description" rows="4"><?= htmlspecialchars($avis['description']) ?></textarea>
-</div>
-
-            <div class="form-group">
-              <label for="reported_at">Date de signalement</label>
-              <input type="datetime-local" class="form-control" name="reported_at" id="reported_at" value="<?= htmlspecialchars($avis['reported_at']) ?>" >
-            </div>
-
-            <div class="text-center">
-              <button type="submit" class="btn btn-primary">Modifier l'avis</button>
-            </div>
-          </form>
+      <?php if (!empty($errors)): ?>
+        <div class="alert alert-danger">
+          <?php foreach ($errors as $error): ?>
+            <div><?= htmlspecialchars($error) ?></div>
+          <?php endforeach; ?>
         </div>
-      </div>
+      <?php endif; ?>
+
+      <?php if ($avis): ?>
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <form method="POST">
+              <input type="hidden" name="id" value="<?= htmlspecialchars($avis['id']) ?>">
+              <input type="hidden" name="event_id" value="<?= htmlspecialchars($avis['id_event']) ?>">
+
+              <div class="form-group">
+                <label for="name">Nom</label>
+                <input type="text" class="form-control" name="name" id="name" value="<?= htmlspecialchars($avis['name']) ?>" required>
+              </div>
+
+              <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" name="description" id="description" rows="4" required><?= htmlspecialchars($avis['description']) ?></textarea>
+              </div>
+
+              <div class="text-center">
+                <button type="submit" class="btn btn-primary">Modifier l'avis</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      <?php endif; ?>
     </div>
   </section>
 </div>

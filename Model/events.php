@@ -6,6 +6,9 @@ class event {
     private $date;
     private $location;
     private $organizer_id;
+    private $image;
+    private $latitude;
+    private $longitude;
 
     public function setid($id) {
         $this->id = $id;
@@ -31,6 +34,18 @@ class event {
         $this->organizer_id = $organizer_id;
     }
 
+    public function setImage($image) {
+        $this->image = $image;
+    }
+
+    public function setLatitude($latitude) {
+        $this->latitude = $latitude;
+    }
+
+    public function setLongitude($longitude) {
+        $this->longitude = $longitude;
+    }
+
     public function getid() {
         return $this->id;
     }
@@ -53,6 +68,18 @@ class event {
 
     public function getorganizer_id() {
         return $this->organizer_id;
+    }
+
+    public function getImage() {
+        return $this->image;
+    }
+
+    public function getLatitude() {
+        return $this->latitude;
+    }
+
+    public function getLongitude() {
+        return $this->longitude;
     }
 }
 ?>

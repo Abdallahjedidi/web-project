@@ -1,3 +1,23 @@
+<?php
+// Fetch events from the database (Example)
+try {
+    // Create a PDO instance to connect to the database
+    $pdo = new PDO('mysql:host=localhost;dbname=urban_management', 'root');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Prepare and execute the query to get events
+    $stmt = $pdo->prepare("SELECT * FROM events");
+    $stmt->execute();
+
+    // Store the results in the $liste variable
+    $liste = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    // In case of an error, output the error message and set $liste to an empty array
+    echo "Error: " . $e->getMessage();
+    $liste = []; // Set to an empty array if there’s an error
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -51,21 +71,64 @@
               </p>
               <div class="btn-box">
                 <a href="addavis.php" class="btn-1">Donner un avis</a>
-
-                <a href="addevent.php" class="btn-1">ajouter un event </a>
-                
+                <a href="addevent.php" class="btn-1">Ajouter un événement</a>
               </div>
             </div>
           </div>
           <div class="col-md-6">
-           
+            <!-- Optionally you can add an image or another section here -->
           </div>
         </div>
       </div>
     </section>
   </div>
-    <!-- Main Content Section -->
-    
+
+  <!-- Main Content Section - Display Events -->
+  <div class="container">
+    <h2 class="text-center mb-4">Nos Événements</h2>
+
+    <!-- Bootstrap Carousel for Events -->
+    <div id="eventCarousel" class="carousel slide" data-ride="carousel">
+      <div class="carousel-inner">
+        <?php if (!empty($liste)): ?>
+          <?php foreach ($liste as $index => $event): ?>
+            <div class="carousel-item <?= $index === 0 ? 'active' : ''; ?>">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card h-100">
+                    <?php if (!empty($event['image'])): ?>
+                      <img src="<?= htmlspecialchars($event['image']) ?>" class="card-img-top" alt="Event Image">
+                    <?php else: ?>
+                      <img src="images/default-event.jpg" class="card-img-top" alt="Default Event Image">
+                    <?php endif; ?>
+                    <div class="card-body">
+                      <h5 class="card-title"><?= htmlspecialchars($event['title']) ?></h5>
+                      <p class="card-text"><?= htmlspecialchars(substr($event['description'], 0, 100)) ?>...</p>
+                      <p class="card-text"><small class="text-muted"><?= htmlspecialchars($event['date']) ?></small></p>
+                      <a href="eventdetails.php?id=<?= $event['id'] ?>" class="btn btn-primary d-block mx-auto mt-3" style="width: fit-content;">
+  Voir les détails
+</a>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <p>No events available.</p>
+        <?php endif; ?>
+      </div>
+      <a class="carousel-control-prev" href="#eventCarousel" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#eventCarousel" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+  </div>
 
   <!-- Optional Footer -->
   <footer class="footer_section">

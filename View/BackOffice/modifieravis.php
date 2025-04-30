@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     if (isset($_POST['id'])) {
         $avis->setId($_POST['id']);
     }
-    if (isset($_POST['event_id'])) {
+    if (isset($_POST['id_event'])) {
         $avis->setIdEvent($_POST['id_event']);
     }
     if (isset($_POST['name'])) {
@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Dashboard</title>
+    <title>URBANISME - Dashboard</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -63,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+        <div class="sidebar-brand-text mx-3">URBANISME</div>
     </a>
 
     <!-- Divider -->
@@ -351,7 +351,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
 
             <div class="form-group">
                 <label for="description">Description</label>
-                < class="form-control" id="description" name="description" required><?php echo htmlspecialchars($avis->getDescription()); ?></>
+                <class="form-control" id="description" name="description" required><?php echo htmlspecialchars($avis->getDescription()); ?></>
             </div>
 
             <div class="form-group">

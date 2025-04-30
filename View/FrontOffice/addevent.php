@@ -7,40 +7,65 @@ $errors = [];
 $success = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  // Sanitize and get form data
+  $title = trim($_POST['title']);
+  $description = trim($_POST['description']);
+  $date = trim($_POST['date']);
+  $location = trim($_POST['location']);
+  $organizer_id = trim($_POST['organizer_id']);
+  $latitude = trim($_POST['latitude']);
+  $longitude = trim($_POST['longitude']);
+  $image = $_FILES['image'];
 
-    $title = trim($_POST['title']);
-    $description = trim($_POST['description']);
-    $date = trim($_POST['date']);
-    $location = trim($_POST['location']);
+  // Validate each field
+  if (empty($title) || strlen($title) < 3 || !preg_match("/^[a-zA-Z0-9\s\-.,!?]+$/", $title)) {
+    $errors['title'] = "Le titre doit contenir au moins 3 caractères et être valide (lettres, chiffres et ponctuation autorisés).";
+  }
 
-    if (empty($title)) {
-        $errors[] = "Title is required.";
-    }
+  if (empty($description) || strlen($description) < 10) {
+    $errors['description'] = "La description doit contenir au moins 10 caractères.";
+  }
 
-    if (empty($description)) {
-        $errors[] = "Description is required.";
-    }
+  if (empty($date) || !preg_match("/^\d{4}-\d{2}-\d{2}$/", $date)) {
+    $errors['date'] = "La date est invalide. Format attendu : AAAA-MM-JJ.";
+  }
 
-    if (empty($date)) {
-        $errors[] = "Date is required.";
-    }
+  if (empty($location) || strlen($location) < 3) {
+    $errors['location'] = "Le lieu est requis et doit être valide.";
+  }
 
-    if (empty($location)) {
-        $errors[] = "Location is required.";
-    }
+  if (empty($organizer_id) || !is_numeric($organizer_id)) {
+    $errors['organizer_id'] = "L'ID de l'organisateur doit être un nombre.";
+  }
 
-    if (empty($errors)) {
-        $event = new event();
-        $event->settitle($title);
-        $event->setdescription($description);
-        $event->setdate($date);
-        $event->setlocation($location);
+  if (!is_numeric($latitude) || $latitude < -90 || $latitude > 90) {
+    $errors['latitude'] = "La latitude est invalide.";
+  }
 
-        $eventController = new eventcontroller();
-        $eventController->addevent($event);
+  if (!is_numeric($longitude) || $longitude < -180 || $longitude > 180) {
+    $errors['longitude'] = "La longitude est invalide.";
+  }
 
-        $success = "Thank you! Your feedback has been submitted.";
-    }
+  if (!isset($image) || $image['error'] != 0) {
+    $errors['image'] = "Une image valide est requise.";
+  }
+
+  // If no errors, proceed
+  if (empty($errors)) {
+    $event = new Event();
+    $event->setTitle($title);
+    $event->setDescription($description);
+    $event->setDate($date);
+    $event->setLocation($location);
+    $event->setorganizer_id($organizer_id);
+    $event->setLatitude($latitude);
+    $event->setLongitude($longitude);
+
+    $eventController = new eventcontroller();
+    $eventController->addevent($event, $image);
+
+    $success = "Événement ajouté avec succès.";
+  }
 }
 ?>
 
@@ -58,7 +83,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <link rel="stylesheet" href="css/responsive.css" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
 </head>
+<style>
+    /* Change the color of the page heading */
+.heading_container h2 {
+    color: #007bff; /* Blue text for the heading */
+}
 
+/* Change the color of the labels */
+.form-group label {
+    color: #555; /* Dark grey color for labels */
+}
+
+/* Change the color of the input field text */
+.form-control {
+    color: #333; /* Dark grey text for inputs */
+}
+
+/* Change the color of error messages */
+.text-danger {
+    color: #dc3545; /* Red color for error messages */
+}
+
+/* Change the color of success messages */
+.alert-success {
+    color: #fff; /* White text for success message */
+}
+
+/* Change the color of the submit button text */
+.btn-primary {
+    color: #fff; /* White text for the submit button */
+}
+
+/* Change the color of the navbar links */
+.navbar-nav .nav-item .nav-link {
+    color: #fff !important; /* White text for navbar links */
+}
+  </style>
 <body>
   <div class="hero_area">
     <!-- Header -->
@@ -85,41 +145,76 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <section class="contact_section layout_padding">
       <div class="container">
         <div class="heading_container heading_center">
-          <h2>Ajouter un événement</h2>
-        </div>
-
-        <?php if (!empty($errors)): ?>
-          <div class="alert alert-danger">
-            <ul>
-              <?php foreach ($errors as $e): ?>
-                <li><?= htmlspecialchars($e) ?></li>
-              <?php endforeach; ?>
-            </ul>
-          </div>
-        <?php elseif (!empty($success)): ?>
-          <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+        <h2>Ajouter un événement</h2>
+        <?php if (!empty($success)): ?>
+            <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
         <?php endif; ?>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="title">Titre</label>
+                <input type="text" name="title" id="title" class="form-control" value="<?= htmlspecialchars($title ?? '') ?>">
+                <?php if (isset($errors['title'])): ?>
+                    <div class="text-danger"><?= $errors['title'] ?></div>
+                <?php endif; ?>
+            </div>
 
-        <form method="POST">
-          <div class="form-group">
-            <label for="title">Titre de l'événement</label>
-            <input type="text" class="form-control" name="title" id="title" value="<?= htmlspecialchars($_POST['title'] ?? '') ?>">
-          </div>
-          <div class="form-group">
-            <label for="description">Description</label>
-            <textarea class="form-control" name="description" id="description" rows="4"><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
-          </div>
-          <div class="form-group">
-            <label for="date">Date & Heure</label>
-            <input type="datetime-local" class="form-control" name="date" id="date" value="<?= htmlspecialchars($_POST['date'] ?? '') ?>">
-          </div>
-          <div class="form-group">
-            <label for="location">Lieu</label>
-            <input type="text" class="form-control" name="location" id="location" value="<?= htmlspecialchars($_POST['location'] ?? '') ?>">
-          </div>
-          <div class="btn-box text-center">
-            <input type="submit" class="btn btn-primary" value="Ajouter l'événement">
-          </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea name="description" id="description" class="form-control"><?= htmlspecialchars($description ?? '') ?></textarea>
+                <?php if (isset($errors['description'])): ?>
+                    <div class="text-danger"><?= $errors['description'] ?></div>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="text" name="date" id="date" class="form-control" value="<?= htmlspecialchars($date ?? '') ?>">
+                <?php if (isset($errors['date'])): ?>
+                    <div class="text-danger"><?= $errors['date'] ?></div>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Lieu</label>
+                <input type="text" name="location" id="location" class="form-control" value="<?= htmlspecialchars($location ?? '') ?>">
+                <?php if (isset($errors['location'])): ?>
+                    <div class="text-danger"><?= $errors['location'] ?></div>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-group">
+                <label for="organizer_id">ID Organisateur</label>
+                <input type="text" name="organizer_id" id="organizer_id" class="form-control" value="<?= htmlspecialchars($organizer_id ?? '') ?>">
+                <?php if (isset($errors['organizer_id'])): ?>
+                    <div class="text-danger"><?= $errors['organizer_id'] ?></div>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-group">
+                <label for="latitude">Latitude</label>
+                <input type="text" name="latitude" id="latitude" class="form-control" value="<?= htmlspecialchars($latitude ?? '') ?>">
+                <?php if (isset($errors['latitude'])): ?>
+                    <div class="text-danger"><?= $errors['latitude'] ?></div>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-group">
+                <label for="longitude">Longitude</label>
+                <input type="text" name="longitude" id="longitude" class="form-control" value="<?= htmlspecialchars($longitude ?? '') ?>">
+                <?php if (isset($errors['longitude'])): ?>
+                    <div class="text-danger"><?= $errors['longitude'] ?></div>
+                <?php endif; ?>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Image</label>
+                <input type="file" name="image" id="image" class="form-control">
+                <?php if (isset($errors['image'])): ?>
+                    <div class="text-danger"><?= $errors['image'] ?></div>
+                <?php endif; ?>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Ajouter l'événement</button>
         </form>
       </div>
     </section>

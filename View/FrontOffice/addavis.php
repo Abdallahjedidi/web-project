@@ -6,51 +6,42 @@ include_once '../../Model/Avis.php';
 $errors = [];
 $success = "";
 
+// Get id_event from URL if present
+$id_event = $_GET['id_event'] ?? null;
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $id = trim($_POST['id']);
-    $id_event = trim($_POST['id_event']);
-    $name = trim($_POST['name']);
-    $description = trim($_POST['description']);
-    $reported_at = trim($_POST['reported_at']);
+  $id_event = trim($_POST['id_event']); // pulled from hidden input
+  $name = trim($_POST['name']);
+  $description = trim($_POST['description']);
+  $reported_at = date('Y-m-d H:i:s'); // Automatically set current timestamp
 
-    if (empty($id)) {
-        $errors[] = "ID is required.";
-    } elseif (!ctype_digit($id)) {
-        $errors[] = "ID must be a number.";
-    }
+  $errors = [];
 
-    if (empty($id_event)) {
-        $errors[] = "Event ID is required.";
-    } elseif (!ctype_digit($id_event)) {
-        $errors[] = "Event ID must be a number.";
-    }
+  if (empty($name) || !preg_match("/^[a-zA-Z\s]+$/", $name)) {
+      $errors[] = "Invalid name (letters and spaces only).";
+  }
 
-    if (empty($name)) {
-        $errors[] = "Name is required.";
-    }
+  if (empty($description)|| strlen($description) < 3) {
+      $errors[] = "Description cannot be empty.";
+  }
 
-    if (empty($description)) {
-        $errors[] = "Description is required.";
-    }
+  if (empty($errors)) {
+      $avis = new Avis();
 
-    if (empty($reported_at)) {
-        $errors[] = "Date is required.";
-    }
+      $avis->setIdEvent($id_event);
+      $avis->setName($name);
+      $avis->setDescription($description);
+      $avis->setReportedAt($reported_at);
 
-    if (empty($errors)) {
-        $avis = new Avis();
-        $avis->setId($id);
-        $avis->setIdEvent($id_event);
-        $avis->setName($name);
-        $avis->setDescription($description);
-        $avis->setReportedAt($reported_at);
+      $avisc = new AvisController();
+      $avisc->addAvis($avis);
 
-        $avisc = new AvisController();
-        $avisc->addAvis($avis);
-
-        $success = "Thank you! Your feedback has been submitted.";
-    }
+      $success = "Thank you! Your feedback has been submitted.";
+      //Redirect to event list page after successful update
+      header("Location: afficheevent.php");
+      exit();
+  }
 }
 ?>
 
@@ -68,7 +59,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <link rel="stylesheet" href="css/responsive.css" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
 </head>
+<style>
+    /* Change the color of the page heading */
+.heading_container h2 {
+    color: #007bff; /* Blue text for the heading */
+}
 
+/* Change the color of the labels */
+.form-group label {
+    color: #555; /* Dark grey color for labels */
+}
+
+/* Change the color of the input field text */
+.form-control {
+    color: #333; /* Dark grey text for inputs */
+}
+
+/* Change the color of error messages */
+.text-danger {
+    color: #dc3545; /* Red color for error messages */
+}
+
+/* Change the color of success messages */
+.alert-success {
+    color: #fff; /* White text for success message */
+}
+
+/* Change the color of the submit button text */
+.btn-primary {
+    color: #fff; /* White text for the submit button */
+}
+
+/* Change the color of the navbar links */
+.navbar-nav .nav-item .nav-link {
+    color: #fff !important; /* White text for navbar links */
+}
+  </style>
 <body>
 
   <div class="hero_area">
@@ -94,15 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
     </header>
 
-    <!-- Page Title -->
-    <section class="slider_section">
-      <div class="container text-center">
-        <h1>Donner votre avis</h1>
-        <p>Partagez votre avis sur un événement ou une initiative locale.</p>
-      </div>
-    </section>
-  </div>
-
+   
   <!-- Form Section -->
   <div class="container my-5">
     <div class="row justify-content-center">
@@ -119,18 +137,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
         <?php endif; ?>
 
-        <form method="POST" class="bg-light p-4 rounded shadow">
-          <div class="form-group">
-            <label for="id">ID :</label>
-            <input type="text" name="id" id="id" class="form-control" value="<?= htmlspecialchars($_POST['id'] ?? '') ?>">
-          </div>
+        <form method="POST" class="bg-light p-4 rounded shadow">        
+               
+        <div class="form-group">
+            <label for="id_event">ID Event</label>
+            <input type="hidden" name="id_event" value="<?= htmlspecialchars($id_event) ?>">
+        </div>
 
-          <div class="form-group">
-            <label for="id_event">ID Événement :</label>
-            <input type="text" name="id_event" id="id_event" class="form-control" value="<?= htmlspecialchars($_POST['id_event'] ?? '') ?>">
-          </div>
-
-          <div class="form-group">
+         <div class="form-group">
             <label for="name">Votre nom :</label>
             <input type="text" name="name" id="name" class="form-control" value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
           </div>
@@ -140,10 +154,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <textarea name="description" id="description" class="form-control" rows="4"><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
           </div>
 
-          <div class="form-group">
-            <label for="reported_at">Date :</label>
-            <input type="datetime-local" name="reported_at" id="reported_at" class="form-control" value="<?= htmlspecialchars($_POST['reported_at'] ?? '') ?>">
-          </div>
+          <!-- reported_at field removed from form -->
 
           <button type="submit" class="btn btn-primary">Soumettre</button>
         </form>

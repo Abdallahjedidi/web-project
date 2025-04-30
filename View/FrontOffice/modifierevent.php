@@ -3,28 +3,86 @@ include_once '../../Model/events.php';
 include_once '../../config.php';
 include_once '../../Controller/eventsController.php';
 
+$errors = [];
+$title = $description = $date = $location = $latitude = $longitude = $organizer_id = "";
+$id = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
-    $event = new Event();
-
-    if (isset($_POST['id'])) {
-        $event->setId($_POST['id']);
-    }
-    if (isset($_POST['title'])) {
-        $event->setTitle($_POST['title']);
-    }
-    if (isset($_POST['description'])) {
-        $event->setDescription($_POST['description']);
-    }
-    if (isset($_POST['date'])) {
-        $event->setDate($_POST['date']);
-    }
-    if (isset($_POST['location'])) {
-        $event->setLocation($_POST['location']);
-    }
-    
+// Handle GET: Fetch data for form
+if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id'])) {
+    $id = $_GET['id'];
     $eventController = new eventcontroller();
-    $eventController->updateevents($event);
+    $event = $eventController->rechercher($id);
+
+    if ($event) {
+        $event = $event[0];
+        $title = $event['title'];
+        $description = $event['description'];
+        $date = $event['date'];
+        $location = $event['location'];
+        $latitude = $event['latitude'];
+        $longitude = $event['longitude'];
+        $organizer_id = $event['organizer_id'];
+    }
+}
+
+// Handle POST: Validate and update
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
+    $id = $_POST['id'];
+    $title = trim($_POST['title']);
+    $description = trim($_POST['description']);
+    $date = trim($_POST['date']);
+    $location = trim($_POST['location']);
+    $latitude = trim($_POST['latitude']);
+    $longitude = trim($_POST['longitude']);
+    $organizer_id = trim($_POST['organizer_id']);
+
+    // Validation
+    if (empty($title) || strlen($title) < 3) {
+        $errors['title'] = "Le titre doit contenir au moins 3 caractères.";
+    }
+
+    if (empty($description) || strlen($description) < 10) {
+        $errors['description'] = "La description doit contenir au moins 10 caractères.";
+    }
+
+    if (empty($date) || !preg_match("/^\d{4}-\d{2}-\d{2}$/", $date)) {
+        $errors['date'] = "La date est invalide. Format attendu : AAAA-MM-JJ.";
+    }
+
+    if (empty($location)) {
+        $errors['location'] = "Le lieu est requis.";
+    }
+
+    if (!is_numeric($latitude) || $latitude < -90 || $latitude > 90) {
+        $errors['latitude'] = "Latitude invalide. Elle doit être comprise entre -90 et 90.";
+    }
+
+    if (!is_numeric($longitude) || $longitude < -180 || $longitude > 180) {
+        $errors['longitude'] = "Longitude invalide. Elle doit être comprise entre -180 et 180.";
+    }
+
+    if (empty($organizer_id) || !is_numeric($organizer_id)) {
+        $errors['organizer_id'] = "L'ID de l'organisateur doit être un nombre.";
+    }
+
+    // If no errors, update event
+    if (empty($errors)) {
+        $event = new Event();
+        $event->setId($id);
+        $event->setTitle($title);
+        $event->setDescription($description);
+        $event->setDate($date);
+        $event->setLocation($location);
+        $event->setLatitude($latitude);
+        $event->setLongitude($longitude);
+        $event->setorganizer_Id($organizer_id);
+
+        $eventController = new eventcontroller();
+        $eventController->updateevents($event);
+
+        header("Location: afficheevent.php");
+        exit();
+    }
 }
 ?>
 
@@ -42,6 +100,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/responsive.css" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  
+  <!-- Google Maps API -->
+  
+  
 </head>
 <body>
 
@@ -65,65 +127,113 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
       </nav>
     </div>
   </header>
-  
 
-  <h1 class="text-center">Modifier un event</h1> 
-                </div>
-                <?php
-include_once '../../Controller/eventscontroller.php';
+  <h1 class="text-center">Modifier un événement</h1>
 
-$title = $description = $date = $location =  "";
-$id = "";
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
-    $id = $_POST['search'];
-    $eventController = new eventcontroller();
-    $event = $eventController->rechercher($id);
-
-    if ($event) {
-        $event = $event[0];
-        $title = $event['title'];
-        $description = $event['description'];
-        $date = $event['date'];
-        $location = $event['location'];
-        $organizer_id = $event['organizer_id'];
-    }
-}
-?>
- <form class="user mx-auto" action="" method="POST" style="max-width: 400px;">
-    <div class="form-group">
-        <label for="search">ID EVENT:</label>
-        <input type="number" class="form-control form-control-user" id="search" name="search"
-               value="<?= isset($_POST['search']) ? htmlspecialchars($_POST['search']) : '' ?>" >
-    </div>
-    <button type="submit" class="btn btn-primary btn-user btn-block">Rechercher</button>
-</form>
-
-<form class="user mx-auto" method="POST" onsubmit="return validateForm();" style="max-width: 400px; margin-top: 20px;">
+  <form class="user mx-auto" method="POST" style="max-width: 400px; margin-top: 20px;">
     <input type="hidden" name="id" value="<?= htmlspecialchars($id ?? '') ?>">
+    <input type="hidden" name="organizer_id" value="<?= htmlspecialchars($organizer_id ?? '') ?>">
 
+    <!-- Title -->
     <div class="form-group">
         <label for="title">Title:</label>
         <input type="text" class="form-control form-control-user" id="title" name="title" value="<?= htmlspecialchars($title) ?>">
+        <?php if (!empty($errors['title'])): ?>
+            <small class="text-danger"><?= $errors['title'] ?></small>
+        <?php endif; ?>
     </div>
 
+    <!-- Description -->
     <div class="form-group">
         <label for="description">Description:</label>
         <input type="text" class="form-control form-control-user" id="description" name="description" value="<?= htmlspecialchars($description) ?>">
+        <?php if (!empty($errors['description'])): ?>
+            <small class="text-danger"><?= $errors['description'] ?></small>
+        <?php endif; ?>
     </div>
 
+    <!-- Date -->
     <div class="form-group">
         <label for="date">Date:</label>
         <input type="date" class="form-control form-control-user" id="date" name="date" value="<?= htmlspecialchars($date) ?>">
+        <?php if (!empty($errors['date'])): ?>
+            <small class="text-danger"><?= $errors['date'] ?></small>
+        <?php endif; ?>
     </div>
 
+    <!-- Location -->
     <div class="form-group">
         <label for="location">Location:</label>
         <input type="text" class="form-control form-control-user" id="location" name="location" value="<?= htmlspecialchars($location) ?>">
+        <?php if (!empty($errors['location'])): ?>
+            <small class="text-danger"><?= $errors['location'] ?></small>
+        <?php endif; ?>
+    </div>
+
+    <!-- Latitude -->
+    <div class="form-group">
+        <label for="latitude">Latitude:</label>
+        <input type="text" class="form-control form-control-user" id="latitude" name="latitude" value="<?= htmlspecialchars($latitude) ?>" >
+        <?php if (!empty($errors['latitude'])): ?>
+            <small class="text-danger"><?= $errors['latitude'] ?></small>
+        <?php endif; ?>
+    </div>
+
+    <!-- Longitude -->
+    <div class="form-group">
+        <label for="longitude">Longitude:</label>
+        <input type="text" class="form-control form-control-user" id="longitude" name="longitude" value="<?= htmlspecialchars($longitude) ?>" >
+        <?php if (!empty($errors['longitude'])): ?>
+            <small class="text-danger"><?= $errors['longitude'] ?></small>
+        <?php endif; ?>
     </div>
 
     <button type="submit" name="update" class="btn btn-primary btn-user btn-block">Mettre à jour</button>
 </form>
+
+
+  <!-- Google Maps Script -->
+  <script>
+    let map;
+    let marker;
+
+    function initMap() {
+      const defaultLocation = { lat: <?= $latitude ?? '0' ?>, lng: <?= $longitude ?? '0' ?> };
+      
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: defaultLocation,
+        zoom: 15,
+      });
+
+      marker = new google.maps.Marker({
+        position: defaultLocation,
+        map: map,
+      });
+
+      /*const input = document.getElementById("location");
+      const autocomplete = new google.maps.places.Autocomplete(input);
+      
+      autocomplete.setFields(["address_components", "geometry"]);
+
+      autocomplete.addListener("place_changed", function () {
+        const place = autocomplete.getPlace();
+
+        if (place.geometry) {
+          map.setCenter(place.geometry.location);
+          marker.setPosition(place.geometry.location);
+
+          // Set latitude and longitude values
+          document.getElementById("latitude").value = place.geometry.location.lat();
+          document.getElementById("longitude").value = place.geometry.location.lng();
+        }
+      });*/
+    }
+
+    google.maps.event.addDomListener(window, "load", initMap);
+  </script>
+
+  <!-- Map div -->
+  <div id="map" style="width: 100%; height: 300px;"></div>
 
 <script>
 function validateForm() {
@@ -148,7 +258,7 @@ function validateForm() {
     }
 
     if (!location) {
-        alert("Veuillez saisir location.");
+        alert("Veuillez saisir le lieu.");
         return false;
     }
 
@@ -156,6 +266,7 @@ function validateForm() {
     return true;
 }
 </script>
+
 <!-- Footer -->
 <footer class="footer_section">
   <div class="container text-center">

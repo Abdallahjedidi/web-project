@@ -24,7 +24,7 @@ if (isset($_POST['id'])) {
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Dashboard</title>
+    <title>URBANISME - Dashboard</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -49,7 +49,7 @@ if (isset($_POST['id'])) {
     <div class="sidebar-brand-icon rotate-n-15">
         <i class="fas fa-laugh-wink"></i>
     </div>
-    <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+    <div class="sidebar-brand-text mx-3">URBANISME</div>
 </a>
 
 <!-- Divider -->
@@ -79,6 +79,12 @@ if (isset($_POST['id'])) {
         </div>
     </div>
 </li>
+<li class="nav-item">
+                <a class="nav-link" href="charts.php">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>charts</span>
+                </a>
+            </li>
 <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsethree"
         aria-expanded="true" aria-controls="collapsethree">
@@ -321,47 +327,27 @@ if (isset($_POST['id'])) {
     
     
 
-    <!-- DataTables Example -->
-    <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Display Events</h1>
-    <div class="card shadow mb-4">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered text-center" width="100%" cellspacing="0">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Event Name</th>
-                            <th>Description</th>
-                            <th>Location</th>
-                            <th>Date</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach($liste as $event): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($event['id']) ?></td>
-                            <td><?= htmlspecialchars($event['title']) ?></td>
-                            <td><?= htmlspecialchars($event['description']) ?></td>
-                            <td><?= htmlspecialchars($event['location']) ?></td>
-                            <td><?= htmlspecialchars($event['date']) ?></td>
-                            <td>
-                            <form action="displayevent.php" method="POST">  <!-- Changed to Avis -->
-                                  <input type="hidden" name="id" value="<?= $event['id'] ?>" />  <!-- Changed from vehicule to avis -->
-                                  <button type="submit" class="btn btn-danger btn-sm">🗑 Supprimer</button>
-                                    <!-- ✅ Update button -->
-                                   <a href="modifierevent.php?id=<?= $event['id']; ?>" class="btn btn-warning btn-sm">Update</a>    
-                            </form>
-                            </td>
-                        </tr>
+    <!-- Event Cards -->
+                    <div class="row">
+                        <?php foreach ($liste as $event): ?>
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100">
+                                    <?php if (!empty($event['image'])): ?>
+                                        <img src="<?= htmlspecialchars($event['image']) ?>" class="card-img-top" alt="Event Image">
+                                    <?php else: ?>
+                                        <img src="images/default-event.jpg" class="card-img-top" alt="Default Event Image">
+                                    <?php endif; ?>
+                                    <div class="card-body">
+                                        <h5 class="card-title"><?= htmlspecialchars($event['title']) ?></h5>
+                                        <p class="card-text"><?= htmlspecialchars(substr($event['description'], 0, 100)) ?>...</p>
+                                        <p class="card-text"><small class="text-muted"><?= htmlspecialchars($event['date']) ?></small></p>
+                                        <a href="eventdetails.php?id=<?= $event['id'] ?>" class="btn btn-primary">See Details</a>
+                                    </div>
+                                </div>
+                            </div>
                         <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+                    </div>
+            
 
     
 

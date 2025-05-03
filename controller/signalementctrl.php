@@ -205,6 +205,20 @@ class SignalementC {
         return $req->fetch();
     }
 
+    public function getSignalementById($id_signalement) {
+        $sql = "SELECT * FROM signalement WHERE id_signalement = ?";
+        $db = config::getConnection();
+        try {
+            $query = $db->prepare($sql);
+            $query->execute([$id_signalement]);
+            return $query->fetch();
+        } catch (PDOException $e) {
+            die('Erreur: ' . $e->getMessage());
+        }
+    }
+    
+    
+
     public function afficherSignalements() {
         $db = config::getConnection();
         try {

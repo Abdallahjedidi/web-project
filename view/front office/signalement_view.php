@@ -37,18 +37,10 @@ $signalements = $signalementCtrl->afficherSignalements();
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto">
-              <li class="nav-item">
-                <a class="nav-link" href="index.php">ACCUEIL</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="signalement_ajout.php">AJOUTER</a>
-              </li>
-              <li class="nav-item active">
-                <a class="nav-link" href="signalement_view.php">VOIR LES SIGNALEMENTS</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="contact.php">CONTACT</a>
-              </li>
+              <li class="nav-item"><a class="nav-link" href="index.php">ACCUEIL</a></li>
+              <li class="nav-item"><a class="nav-link" href="signalement_ajout.php">AJOUTER</a></li>
+              <li class="nav-item active"><a class="nav-link" href="signalement_view.php">VOIR LES SIGNALEMENTS</a></li>
+              <li class="nav-item"><a class="nav-link" href="contact.php">CONTACT</a></li>
             </ul>
           </div>
         </nav>
@@ -86,6 +78,7 @@ $signalements = $signalementCtrl->afficherSignalements();
                     <td>
                       <a href="signalement_edit.php?id=<?= $sig['id_signalement'] ?>" class="btn btn-sm btn-warning">Modifier</a>
                       <a href="?delete=<?= $sig['id_signalement'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Confirmer la suppression ?')">Supprimer</a>
+                      <a href="signalement_suivi.php?id_signalement=<?= $sig['id_signalement'] ?>" class="btn btn-sm btn-info">Suivi</a>
                     </td>
                   </tr>
                 <?php endforeach; ?>

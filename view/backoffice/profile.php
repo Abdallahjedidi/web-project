@@ -385,7 +385,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const nom = document.getElementById('update-nom').value.trim();
     const prenom = document.getElementById('update-prenom').value.trim();
     const email = document.getElementById('update-email').value.trim();
-
+ // nom
     const nameRegex = /^[a-zA-ZÀ-ÿ\s\-]+$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

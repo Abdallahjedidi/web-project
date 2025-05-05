@@ -30,6 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Profil Utilisateur</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/home.css">
 
     <!-- CSS Bootstrap & MaterialDesign -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
@@ -39,7 +42,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
    
 </head>
 <body>
-
+ <!-- Navigation -->
+ <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">URBANISME</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto" id="navbar-links">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="home.html">Accueil</a>
+                    </li>
+                    <!-- Lien dynamique -->
+                    <li class="nav-item" id="profile-link">
+                        <a class="nav-link" href="profile.php">Profile</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
 <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="col-xl-6 col-md-10">
         <div class="card user-card-full" id="profile-info">

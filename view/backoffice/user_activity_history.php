@@ -1,4 +1,30 @@
+<?php
+session_start();
+include_once '../../config.php';
+include_once '../../model/User.php';
+include_once '../../controller/usercontroller.php';
 
+$conn = Config::getConnection();
+$error_message = '';
+
+// Récupérer tous les utilisateurs avec leur login_count
+$sqlUsers = "SELECT id, nom, prenom, email, login_count FROM users";
+$stmtUsers = $conn->prepare($sqlUsers);
+$stmtUsers->execute();
+$users = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);
+
+// Récupérer les dernières activités de chaque utilisateur
+$sqlActivities = "
+    SELECT u.id AS user_id, u.nom, u.email, a.activity_type, a.activity_description, a.ip_address, a.created_at
+    FROM user_activity a
+    JOIN users u ON a.user_id = u.id
+    ORDER BY a.created_at DESC";
+
+
+$stmtActivities = $conn->prepare($sqlActivities);
+$stmtActivities->execute();
+$activities = $stmtActivities->fetchAll(PDO::FETCH_ASSOC);
+?>
 
 
 
@@ -23,12 +49,11 @@
 
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
-
+    <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
 
-    <!-- Page Wrapper -->
     <div id="wrapper">
 
         <!-- Sidebar -->
@@ -64,11 +89,6 @@
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">edits:</h6>
                         <a class="collapse-item" href="Users.php">List Users</a>
-                        <a class="collapse-item" href="user_activity_history.php">List Users activity</a>
-
-                        
-
-
                        
                     </div>
                 </div>
@@ -136,7 +156,7 @@
 
                         <!-- Nav Item - Alerts -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                           
+                        
                             <!-- Dropdown - Alerts -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="alertsDropdown">
@@ -182,7 +202,7 @@
 
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
-                          
+                           
                             <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="messagesDropdown">
@@ -247,9 +267,7 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">
-                                </span>
-                                                                <img class="img-profile rounded-circle"
+                                <img class="img-profile rounded-circle"
                                     src="img/undraw_profile.svg">
                             </a>
                             <!-- Dropdown - User Information -->
@@ -261,7 +279,7 @@
                                 </a>
                                
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="../frontoffice/login.php" data-toggle="modal" data-target="#logoutModal">
+                                <a class="dropdown-item" href="../frontoffice/profile.php" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Logout
                                 </a>
@@ -278,7 +296,6 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800" style="font-family: math;"  >Dashboard</h1>
                      
                     </div>
 
@@ -286,6 +303,49 @@
 
                 </div>
                 <!-- /.container-fluid -->
+
+                <div class="container mt-5">
+                <h1 class="text-center mb-4">Historique des Activités des Utilisateurs</h1>
+
+<?php if (!empty($activities)): ?>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Activité</th>
+                <th>Description de l'activité</th>
+                <th>IP de connexion</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($activities as $activity): ?>
+                <tr>
+                    <td><?= htmlspecialchars($activity['nom']) ?></td>
+                    <td><?= htmlspecialchars($activity['email']) ?></td>
+                    <td><?= htmlspecialchars($activity['activity_type']) ?></td>
+                    <td><?= htmlspecialchars($activity['activity_description']) ?></td>
+                    <td>
+                        <?php 
+                            // Display "admin" if IP is "1", else display "user"
+                            if ($activity['ip_address'] == '::1') {
+                                echo 'admin'; 
+                            } else {
+                                echo 'user'; 
+                            }
+                        ?>
+                    </td>
+                    <td><?= htmlspecialchars($activity['created_at']) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+<?php else: ?>
+    <p class="text-center">Aucune activité trouvée pour les utilisateurs.</p>
+<?php endif; ?>
+</div>
+
 
             </div>
             <!-- End of Main Content -->
@@ -313,31 +373,24 @@
 
     <!-- Logout Modal-->
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="/projet/view/frontoffice/login.php">Logout</a>
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="/projet/view/frontoffice/login.php">Logout</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script>
-   document.getElementById('logoutButton').addEventListener('click', function () {
-    localStorage.removeItem('user');  
 
-    window.location.href = '/projet/view/frontoffice/login.php';
-});
-
-</script>
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -376,7 +429,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+
 </script>
+
 
 </body>
 

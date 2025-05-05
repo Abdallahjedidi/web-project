@@ -114,7 +114,10 @@ class UserController
     }
 
     public function updateUser($data) {
+        // Connexion à la base de données
         $db = config::getConnection(); 
+    
+        // Mise à jour des informations de l'utilisateur
         $query = "UPDATE users SET nom = :nom, prenom = :prenom, email = :email WHERE id = :id";
         $stmt = $db->prepare($query);
         $stmt->execute([
@@ -123,22 +126,47 @@ class UserController
             ':prenom' => $data['prenom'],
             ':email' => $data['email']
         ]);
+    
+        $ip_address = $_SERVER['REMOTE_ADDR'];
+        $activity_type = 'Modification de profil';
+        $activity_description = "Utilisateur avec ID {$data['id']} a modifié ses informations personnelles.";
+    
+        // Insertion dans la table des activités
+        $activity_sql = "INSERT INTO user_activity (user_id, activity_type, activity_description, ip_address) 
+                         VALUES (:user_id, :activity_type, :activity_description, :ip_address)";
+        $activity_stmt = $db->prepare($activity_sql);
+        $activity_stmt->execute([
+            ':user_id' => $data['id'],
+            ':activity_type' => $activity_type,
+            ':activity_description' => $activity_description,
+            ':ip_address' => $ip_address
+        ]);
     }
     
     public function deleteUser($id)
     {
         $db = config::getConnection();
-        $sql = "DELETE FROM users WHERE id = :id";
+    
+        // Supprimer d'abord les activités de l'utilisateur dans user_activity
+        $sql = "DELETE FROM user_activity WHERE user_id = :id";
         $stmt = $db->prepare($sql);
         $stmt->bindValue(':id', $id);
-
+    
         try {
             $stmt->execute();
-            echo "Utilisateur supprimé avec succès !";
+            
+            // Ensuite, supprimer l'utilisateur
+            $sqlUser = "DELETE FROM users WHERE id = :id";
+            $stmtUser = $db->prepare($sqlUser);
+            $stmtUser->bindValue(':id', $id);
+            $stmtUser->execute();
+    
+            echo "Utilisateur et ses activités supprimés avec succès !";
         } catch (PDOException $e) {
             die("Erreur suppression : " . $e->getMessage());
         }
     }
+    
 
     // Ajout de la méthode de réinitialisation de mot de passe
     public function resetPassword($email)

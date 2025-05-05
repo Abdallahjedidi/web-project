@@ -21,7 +21,7 @@
     <form id="reset-form">
       <div class="form-group">
         <label for="email">Votre Email</label>
-        <input type="email" name="email" id="email" placeholder="ex: nom@domaine.com" required>
+        <input type="email" name="email" id="email" placeholder="ex: nom@domaine.com">
       </div>
 
       <button type="submit">Réinitialiser le mot de passe</button>

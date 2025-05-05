@@ -50,6 +50,46 @@ if (isset($_POST['register'])) {
         $success_message = "Inscription réussie.";
     }
 }
+
+ // chat zomara
+ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['chat_message'])) {
+    header('Content-Type: application/json');
+
+    $message = trim($_POST['chat_message']);
+    if (empty($message)) {
+        echo json_encode(['error' => 'Message vide']);
+        exit;
+    }
+
+    // Appel API Gemini
+    $api_key = 'AIzaSyA3t5e4a6wl3VjZatdnDLBWfDi6xzPU-yo';
+    $url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' . $api_key;
+
+    $request_data = [
+        'contents' => [
+            ['parts' => [['text' => $message]]]
+        ]
+    ];
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    $result = json_decode($response, true);
+    $reply = $result['candidates'][0]['content']['parts'][0]['text'] ?? 'Erreur de réponse';
+
+    echo json_encode(['response' => $reply]);
+    exit;
+}
+
+
+
+//chat zomara
+
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -77,6 +117,94 @@ if (isset($_POST['register'])) {
             border-radius: 5px;
             margin-top: 15px;
         }
+
+        /* chat zoamra */
+        #chat-icon {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background-color: #007bff;
+  color: white;
+  font-size: 28px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  transition: background-color 0.3s ease;
+}
+#chat-icon:hover {
+  background-color: #0056b3;
+}
+
+/* Fenêtre du chatbot */
+#chat-window {
+  position: fixed;
+  bottom: 100px;
+  right: 25px;
+  width: 320px;
+  max-height: 450px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+/* Zone des messages */
+#chat-messages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.4;
+  max-height: 300px;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Zone de saisie */
+#chat-input {
+  display: flex;
+  border-top: 1px solid #ccc;
+}
+
+#chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+#chat-input button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+#chat-input button:hover {
+  background-color: #0056b3;
+}
+
+/* Messages personnalisés */
+#chat-messages div {
+  margin-bottom: 10px;
+}
+#chat-messages strong {
+  color: #007bff;
+}
+ #chatbtn {
+    width: 30%;
+ }
     </style>
 </head>
 <body>
@@ -142,6 +270,52 @@ if (isset($_POST['register'])) {
             Déjà inscrit ? <a href="login.php">Se connecter</a>
         </div>
     </div>
+
+       <!-- el chatzomara -->
+       <div id="chat-icon" onclick="toggleChat()">💬</div>
+
+<div id="chat-window">
+  <div id="chat-messages"></div>
+  <form id="chat-form" onsubmit="return sendChatMessage();">
+    <div id="chat-input">
+      <input type="text" id="chat-message" placeholder="Votre question..." autocomplete="off" />
+      <button type="submit" id="chatbtn">Envoyer</button>
+    </div>
+  </form>
+</div>
+
+    <script>
+function toggleChat() {
+  const chatWindow = document.getElementById('chat-window');
+  chatWindow.style.display = (chatWindow.style.display === 'flex') ? 'none' : 'flex';
+}
+
+function sendChatMessage() {
+  const input = document.getElementById('chat-message');
+  const message = input.value.trim();
+  if (!message) return false;
+
+  const messagesDiv = document.getElementById('chat-messages');
+  messagesDiv.innerHTML += `<div><strong>Vous :</strong> ${message}</div>`;
+  input.value = "";
+
+  fetch("", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "chat_message=" + encodeURIComponent(message)
+  })
+  .then(res => res.json())
+  .then(data => {
+    messagesDiv.innerHTML += `<div><strong>Bot :</strong> ${data.response}</div>`;
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  })
+  .catch(err => {
+    messagesDiv.innerHTML += `<div><strong>Bot :</strong> Erreur serveur</div>`;
+  });
+
+  return false;
+}
+</script>
 
 </body>
 </html>
